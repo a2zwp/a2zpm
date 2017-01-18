@@ -40,27 +40,6 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-/**
- * Autoload class files in classes folder
- *
- * Loaded all class under classes folder loaded autometically
- *
- * @since 1.0.0
- *
- * @param string  $class requested class name
- */
-function a2zpm_autoload( $class ) {
-    if ( stripos( $class, 'A2ZPM_' ) !== false ) {
-        $class_name = str_replace( array( 'A2ZPM_', '_' ), array( '', '-' ), $class );
-        $file_path = __DIR__ . '/classes/' . strtolower( $class_name ) . '.php';
-
-        if ( file_exists( $file_path ) ) {
-            require_once $file_path;
-        }
-    }
-}
-
-spl_autoload_register( 'a2zpm_autoload' );
 
 /**
  * A2Z_PM class
@@ -86,7 +65,6 @@ class A2Z_PM {
      */
     public function __construct() {
         register_activation_hook( __FILE__, array( $this, 'activate' ) );
-        register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 
         // Define all constants
         $this->define_constants();
@@ -131,15 +109,6 @@ class A2Z_PM {
     }
 
     /**
-     * Placeholder for deactivation function
-     *
-     * @return void
-     */
-    public function deactivate() {
-
-    }
-
-    /**
      * Define all constants
      *
      * @since 1.0.0
@@ -154,8 +123,6 @@ class A2Z_PM {
         define( 'A2ZPM_INCLUDES', A2ZPM_PATH . '/includes' );
         define( 'A2ZPM_VIEWS', A2ZPM_PATH . '/views' );
         define( 'A2ZPM_JS_TEMPLATE', A2ZPM_PATH . '/views/js-templates' );
-        define( 'A2ZPM_URL', plugins_url( '', A2ZPM_FILE ) );
-        define( 'A2ZPM_ASSETS', A2ZPM_URL . '/assets' );
     }
 
     /**
@@ -166,11 +133,9 @@ class A2Z_PM {
      * @return void
      */
     public function includes() {
-        if ( is_admin() ) {
-            new A2ZPM_Ajax();
-            new A2ZPM_Admin_Menu();
-            new A2ZPM_Form_Handler();
-        }
+
+        // Load composer autoload all files
+        include dirname( A2ZPM_FILE ) . '/vendor/autoload.php';
 
         // Required all functions file from includes folder
         require_once A2ZPM_INCLUDES. '/functions.php';
@@ -185,7 +150,8 @@ class A2Z_PM {
      * @return void
      */
     public function instantiate() {
-
+        new \WebApps\a2zpm\Admin_Menu();
+        new \WebApps\a2zpm\Ajax();
     }
 
     /**
@@ -198,7 +164,7 @@ class A2Z_PM {
     public function init_actions_filters() {
         add_action( 'init', array( $this, 'localization_setup' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-        add_action( 'admin_footer', array( $this, 'load_js_templates' ) );
+        // add_action( 'admin_footer', array( $this, 'load_js_templates' ) );
     }
 
     /**
@@ -221,17 +187,22 @@ class A2Z_PM {
      *
      * @return void
      */
-    public function enqueue_scripts() {
-        wp_enqueue_style( 'a2zpm-styles', plugins_url( 'assets/css/a2zpm.css', __FILE__ ), false, date( 'Ymd' ) );
-        wp_enqueue_style( 'a2zpm-magnific-popup-style', plugins_url( 'assets/css/magnific-popup.css', __FILE__ ), false, date( 'Ymd' ) );
+    public function enqueue_scripts( $hook ) {
 
-        wp_enqueue_script( 'a2zpm-magnific-popup', plugins_url( 'assets/js/jquery.magnific-popup.js', __FILE__ ), array( 'jquery' ), false, true );
-        wp_enqueue_script( 'a2zpm-vue', plugins_url( 'assets/js/vue.js', __FILE__ ), array( 'jquery' ), false, true );
-        wp_enqueue_script( 'a2zpm-scripts', plugins_url( 'assets/js/a2zpm.js', __FILE__ ), array( 'jquery', 'a2zpm-vue' ), false, true );
+        if ( 'toplevel_page_a2zpm-project' != $hook ) {
+            return;
+        }
+
+        // Load a stylesheet globally
+        wp_enqueue_style( 'a2zpm-styles', plugins_url( 'assets/css/a2zpm.css', __FILE__ ), false, date( 'Ymd' ) );
+
+        // Load scripts for gloablly
+        wp_enqueue_script( 'a2zpm-vue', plugins_url( 'assets/js/vue.js', __FILE__ ), array( 'jquery', 'underscore' ), false, true );
+        wp_enqueue_script( 'a2zpm-scripts', plugins_url( 'assets/js/a2zpm.js', __FILE__ ), array( 'a2zpm-vue' ), false, true );
 
         $localize_script = array(
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
-            '_wpnonce' => wp_create_nonce( 'a2zpm_nonce' )
+            'nonce'   => wp_create_nonce( 'a2zpm_nonce' )
         );
 
         wp_localize_script( 'a2zpm-scripts', 'a2zpm', $localize_script );
@@ -244,9 +215,9 @@ class A2Z_PM {
     *
     * @return void
     **/
-    public function load_js_templates() {
-        a2zpm_get_js_template( A2ZPM_JS_TEMPLATE. '/new-project.php', 'a2zpm-new-project' );
-    }
+    // public function load_js_templates() {
+    //     a2zpm_get_js_template( A2ZPM_JS_TEMPLATE. '/new-project.php', 'a2zpm-new-project' );
+    // }
 
 } // A2Z_PM
 

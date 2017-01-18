@@ -1,0 +1,19 @@
+{
+    "name": "a2z-project-manager",
+    "description": "A todo base complete project management tools for WordPress",
+    "keywords": ["wordpress", "project", "manager", "project-manager", "project-management", "management-project" ],
+    "homepage": "http://web-apps.ninja",
+    "type": "wordpress-plugin",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "A.R. Promy",
+            "email": "promyaaa@gmail.com"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "WebApps\\a2zpm\\": "includes/"
+        }
+    }
+}
