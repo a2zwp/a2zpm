@@ -12,7 +12,7 @@
  */
 function a2zpm_get_js_template( $file_path, $id ) {
     if ( file_exists( $file_path ) ) {
-        echo '<script type="text/html" id="tmpl-' . $id . '">' . "\n";
+        echo '<script type="text/x-template" id="tmpl-' . $id . '">' . "\n";
         include_once $file_path;
         echo "\n" . '</script>' . "\n";
     }

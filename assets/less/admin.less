@@ -1,0 +1,169 @@
+.a2zpm-clearfix {
+    clear: both;
+}
+
+.a2zpm-hide {
+    display: none;
+}
+
+form.a2zpm-from-horizontal {
+
+    .form-group {
+        margin: 10px 0px;
+        width: 100%;
+
+        .form-control {
+            border: none;
+            box-shadow: none;
+            transition: none;
+            width: 100%;
+            padding: 11px;
+            border-bottom: 1px solid #eee;
+            background: none;
+            box-sizing: border-box;
+
+            &.selectize-control {
+                padding: 0px;
+
+                .selectize-input {
+                    border: none;
+                    box-shadow: none;
+                    transition: none;
+                    background: none;
+                }
+
+                .selectize-dropdown {
+                    border: 1px solid rgb(255, 255, 255);
+                    background: rgb(255, 255, 255);
+                    display: none;
+                    margin: 0px;
+                }
+            }
+
+        }
+    }
+}
+
+#a2zpm-projects {
+
+    .project-section {
+        height: 100%;
+
+        .project-wrapper {
+            // background: #FFF;
+            // width: 100%;
+            // float:left;
+            height: 600px;
+
+            .project-list {
+                ul {
+                    li {
+                        background: #fff;
+                        width: 30%;
+                        float: left;
+                        margin-right: 1%;
+                        border: 1px solid #e5e5e5;
+                        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+                        -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+                        -o-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+                        -ms-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+                        padding: 13px;
+
+                        &:nth-child(3n) {
+                            margin-right: 0px;
+                        }
+                    }
+                }
+            }
+
+            &.slide {
+                width: 64.667%;
+                float:left;
+
+                ul {
+                    li {
+                        width: 45.5%;
+                        margin-right: 1%;
+
+                        &:nth-child(3n) {
+                            margin-right: 1%;
+                        }
+
+                        &:nth-child(2n) {
+                            margin-right: 0px;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        .sidebar-section {
+            background: #FFF;
+            width: 28.333%;
+            position: fixed;
+            top: 31px;
+            right: 0px;
+            float: left;
+            height: 100%;
+            // overflow: scroll;
+            border: 1px solid #e5e5e5;
+            -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+            -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+            -o-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+            -ms-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+            z-index: 10;
+
+            .header {
+                padding: 13px;
+                background: #fff;
+                border-bottom: 1px solid #eee;
+
+                &.shadow {
+                    -webkit-box-shadow: 0 4px 10px -6px rgba(0,0,0,1);;
+                    -moz-box-shadow: 0 4px 10px -6px rgba(0,0,0,1);;
+                    -o-box-shadow: 0 4px 10px -6px rgba(0,0,0,1);;
+                    -ms-box-shadow: 0 4px 10px -6px rgba(0,0,0,1);;
+                    box-shadow: 0 4px 10px -6px rgba(0,0,0,1);
+                    width: 100%;
+                    position: fixed;
+                    z-index: 99999;
+                    -webkit-transition: all .4s ease-in;
+                    -moz-transition: all .4s ease-in;
+                    -ms-transition: all .4s ease-in;
+                    -o-transition: all .4s ease-in;
+                    transition: all .4s ease-in;
+                }
+
+                h1 {
+                    margin: 5px 0px;
+                    padding: 0px;
+                    font-size: 20px;
+                    font-weight: 400;
+                }
+            }
+
+            .content {
+                padding: 13px;
+                background: #fafafa;
+                height: 70%;
+                overflow-y: scroll;
+
+                &.push-top {
+                    margin-top: 55px;
+                }
+            }
+
+            .footer {
+                padding: 13px;
+                background: #fff;
+                border-top: 1px solid #eee;
+                z-index: 999;
+                position: fixed;
+                bottom: 0px;
+                width: 100%;
+            }
+        }
+    }
+}

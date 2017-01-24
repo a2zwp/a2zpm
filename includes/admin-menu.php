@@ -30,9 +30,8 @@ class Admin_Menu {
         add_menu_page( __( 'Project Management', A2ZPM_TEXTDOMAIN ), __( 'Projects', A2ZPM_TEXTDOMAIN ), 'manage_options', 'a2zpm-project', array( $this, 'a2zpm_project' ), 'dashicons-clipboard', $position );
 
         $project = add_submenu_page( 'a2zpm-project', __( 'Projects', A2ZPM_TEXTDOMAIN ), __( 'Projects', A2ZPM_TEXTDOMAIN ), 'manage_options', 'a2zpm-project', array( $this, 'a2zpm_project' ) );
-
-
-        // add_submenu_page( 'a2zpm-project', __( 'Settings', A2ZPM_TEXTDOMAIN ), __( 'Settings', A2ZPM_TEXTDOMAIN ), 'manage_options', 'a2zpm-settings', array( $this, 'settings_page' ) );
+        add_submenu_page( 'a2zpm-project', __( 'Category', A2ZPM_TEXTDOMAIN ), __( 'Category', A2ZPM_TEXTDOMAIN ), 'manage_options', 'edit-tags.php?taxonomy=a2zpm_project_category'  );
+        add_submenu_page( 'a2zpm-project', __( 'Settings', A2ZPM_TEXTDOMAIN ), __( 'Settings', A2ZPM_TEXTDOMAIN ), 'manage_options', 'a2zpm-settings', array( $this, 'settings_page' ) );
         // add_submenu_page( 'erp-company', __( 'Tools', WPDL_LISTING_TEXTDOMAIN ), __( 'Tools', WPDL_LISTING_TEXTDOMAIN ), 'manage_options', 'erp-tools', array( $this, 'tools_page' ) );
 
         do_action( 'a2zpm_load_menu', $position );
@@ -46,7 +45,7 @@ class Admin_Menu {
      * @return void
      **/
     function a2zpm_project() {
-        include A2ZPM_VIEWS . '/projects/projects.php';
+        include A2ZPM_VIEWS . '/projects.php';
     }
 
     /**

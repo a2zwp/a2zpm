@@ -8,6 +8,7 @@ module.exports = function(grunt) {
             css: 'assets/css',
             images: 'assets/images',
             js: 'assets/js',
+            src: 'assets/src',
             less: 'assets/less'
         },
 
@@ -25,7 +26,12 @@ module.exports = function(grunt) {
             all_js: {
                 files: {
                     '<%= dirs.js %>/a2zpm.js': [
-                        '<%= dirs.js %>/project.js'
+                        '<%= dirs.src %>/start.js',
+                        '<%= dirs.src %>/mixins/*.js',
+                        '<%= dirs.src %>/components/**/*.js',
+                        '<%= dirs.src %>/routes.js',
+                        '<%= dirs.src %>/app.js',
+                        '<%= dirs.src %>/end.js'
                     ],
                 }
             }
@@ -59,24 +65,19 @@ module.exports = function(grunt) {
             }
         },
 
-
         watch: {
             less: {
                 files: ['<%= dirs.less %>/*.less' ],
-                tasks: ['less:admin'],
-                options: {
-                    livereload: true
-                }
+                tasks: ['less:admin']
             },
 
             js: {
                 files: [
-                    '<%= dirs.js %>/project.js'
+                    '<%= dirs.src %>/components/**/*.js',
+                    '<%= dirs.src %>/mixins/*.js',
+                    '<%= dirs.src %>/*.js'
                 ],
-                tasks: ['concat:all_js'],
-                options: {
-                    livereload: true
-                }
+                tasks: ['concat:all_js']
             }
         },
 
@@ -134,6 +135,7 @@ module.exports = function(grunt) {
 
     });
 
+
     // Load NPM tasks to be used here
     grunt.loadNpmTasks( 'grunt-contrib-less' );
     grunt.loadNpmTasks( 'grunt-wp-i18n' );
@@ -158,4 +160,5 @@ module.exports = function(grunt) {
     grunt.registerTask( 'zip', [
         'clean', 'copy', 'compress'
     ]);
+
 };

@@ -151,6 +151,7 @@ class A2Z_PM {
      */
     public function instantiate() {
         new \WebApps\a2zpm\Admin_Menu();
+        new \WebApps\a2zpm\Post_Types();
         new \WebApps\a2zpm\Ajax();
     }
 
@@ -164,7 +165,8 @@ class A2Z_PM {
     public function init_actions_filters() {
         add_action( 'init', array( $this, 'localization_setup' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-        // add_action( 'admin_footer', array( $this, 'load_js_templates' ) );
+        add_action( 'admin_footer', array( $this, 'load_js_templates' ) );
+        // add_action( 'update_footer', array( $this, 'remove_wp_version' ), 99 );
     }
 
     /**
@@ -195,9 +197,16 @@ class A2Z_PM {
 
         // Load a stylesheet globally
         wp_enqueue_style( 'a2zpm-styles', plugins_url( 'assets/css/a2zpm.css', __FILE__ ), false, date( 'Ymd' ) );
+        wp_enqueue_style( 'a2zpm-vue-animation', plugins_url( 'assets/css/vue2-animate.min.css', __FILE__ ), false, date( 'Ymd' ) );
+        wp_enqueue_style( 'a2zpm-fontawesome', plugins_url( 'assets/css/font-awesome.min.css', __FILE__ ), false, date( 'Ymd' ) );
+        wp_enqueue_style( 'a2zpm-selectize', plugins_url( 'assets/css/selectize.default.css', __FILE__ ), false, date( 'Ymd' ) );
 
         // Load scripts for gloablly
+        // wp_enqueue_script( 'a2zpm-microplugin', plugins_url( 'assets/js/microplugin.min.js', __FILE__ ), array( 'jquery' ), false, true );
+        wp_enqueue_script( 'a2zpm-selectize', plugins_url( 'assets/js/standalone-selectize.min.js', __FILE__ ), array( 'jquery' ), false, true );
         wp_enqueue_script( 'a2zpm-vue', plugins_url( 'assets/js/vue.js', __FILE__ ), array( 'jquery', 'underscore' ), false, true );
+        wp_enqueue_script( 'a2zpm-vue-router', plugins_url( 'assets/js/vue-router.js', __FILE__ ), array( 'a2zpm-vue', 'jquery', 'underscore' ), false, true );
+        wp_enqueue_script( 'a2zpm-vue-router', plugins_url( 'assets/js/vuex.js', __FILE__ ), array( 'a2zpm-vue', 'jquery', 'underscore' ), false, true );
         wp_enqueue_script( 'a2zpm-scripts', plugins_url( 'assets/js/a2zpm.js', __FILE__ ), array( 'a2zpm-vue' ), false, true );
 
         $localize_script = array(
@@ -215,9 +224,29 @@ class A2Z_PM {
     *
     * @return void
     **/
-    // public function load_js_templates() {
-    //     a2zpm_get_js_template( A2ZPM_JS_TEMPLATE. '/new-project.php', 'a2zpm-new-project' );
-    // }
+    public function load_js_templates() {
+        foreach ( glob( A2ZPM_PATH . "/assets/src/components/**/*.php") as $filename ) {
+            $dirname = basename( dirname( $filename ) );
+            a2zpm_get_js_template( $filename, 'a2zpm-' . $dirname );
+         }
+    }
+
+    /**
+    * Remove wp version for only plugins page
+    *
+    * @since 1.0.0
+    *
+    * @return void
+    **/
+    public function remove_wp_version( $text ) {
+        global $hook_suffix;
+
+        if ( 'toplevel_page_a2zpm-project' == $hook_suffix ) {
+            return '';
+        }
+
+        return $text;
+    }
 
 } // A2Z_PM
 
