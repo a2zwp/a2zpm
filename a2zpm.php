@@ -206,13 +206,18 @@ class A2Z_PM {
         wp_enqueue_script( 'a2zpm-selectize', plugins_url( 'assets/js/standalone-selectize.min.js', __FILE__ ), array( 'jquery' ), false, true );
         wp_enqueue_script( 'a2zpm-vue', plugins_url( 'assets/js/vue.js', __FILE__ ), array( 'jquery', 'underscore' ), false, true );
         wp_enqueue_script( 'a2zpm-vue-router', plugins_url( 'assets/js/vue-router.js', __FILE__ ), array( 'a2zpm-vue', 'jquery', 'underscore' ), false, true );
-        wp_enqueue_script( 'a2zpm-vue-router', plugins_url( 'assets/js/vuex.js', __FILE__ ), array( 'a2zpm-vue', 'jquery', 'underscore' ), false, true );
+        wp_enqueue_script( 'a2zpm-vuex', plugins_url( 'assets/js/vuex.js', __FILE__ ), array( 'a2zpm-vue', 'jquery', 'underscore' ), false, true );
         wp_enqueue_script( 'a2zpm-scripts', plugins_url( 'assets/js/a2zpm.js', __FILE__ ), array( 'a2zpm-vue' ), false, true );
 
-        $localize_script = array(
-            'ajaxurl' => admin_url( 'admin-ajax.php' ),
-            'nonce'   => wp_create_nonce( 'a2zpm_nonce' )
-        );
+        $localize_script = [
+            'ajaxurl'            => admin_url( 'admin-ajax.php' ),
+            'nonce'              => wp_create_nonce( 'a2zpm_nonce' ),
+            'project_categories' => get_terms( [
+                                        'taxonomy'   => 'a2zpm_project_category',
+                                        'hide_empty' => false,
+                                    ] )
+        ];
+
 
         wp_localize_script( 'a2zpm-scripts', 'a2zpm', $localize_script );
     }

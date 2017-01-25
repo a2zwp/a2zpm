@@ -1,4 +1,4 @@
-var a2zpm = new Vue({
+var projects = new Vue({
     el: '#a2zpm-projects',
 
     router: router,

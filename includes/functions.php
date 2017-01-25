@@ -17,3 +17,20 @@ function a2zpm_get_js_template( $file_path, $id ) {
         echo "\n" . '</script>' . "\n";
     }
 }
+
+/**
+ * Clean variables using sanitize_text_field. Arrays are cleaned recursively.
+ * Non-scalar values are ignored.
+ *
+ * @param string|array $var
+ *
+ * @return string|array
+ */
+function a2zpm_clean( $var ) {
+    if ( is_array( $var ) ) {
+        return array_map( 'wc_clean', $var );
+    } else {
+        return is_scalar( $var ) ? sanitize_text_field( $var ) : $var;
+    }
+}
+

@@ -1,1 +1,1 @@
-})(jQuery);
+})(jQuery, a2zpm );
