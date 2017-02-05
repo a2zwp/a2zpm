@@ -139,7 +139,7 @@ class A2Z_PM {
 
         // Required all functions file from includes folder
         require_once A2ZPM_INCLUDES. '/functions.php';
-        require_once A2ZPM_INCLUDES. '/functions-projects.php';
+        require_once A2ZPM_INCLUDES. '/function-projects.php';
     }
 
     /**
@@ -150,9 +150,9 @@ class A2Z_PM {
      * @return void
      */
     public function instantiate() {
+        new \WebApps\a2zpm\Ajax();
         new \WebApps\a2zpm\Admin_Menu();
         new \WebApps\a2zpm\Post_Types();
-        new \WebApps\a2zpm\Ajax();
     }
 
     /**
@@ -190,32 +190,57 @@ class A2Z_PM {
      * @return void
      */
     public function enqueue_scripts( $hook ) {
+        global $current_user;
 
         if ( 'toplevel_page_a2zpm-project' != $hook ) {
             return;
         }
 
         // Load a stylesheet globally
-        wp_enqueue_style( 'a2zpm-styles', plugins_url( 'assets/css/a2zpm.css', __FILE__ ), false, date( 'Ymd' ) );
-        wp_enqueue_style( 'a2zpm-vue-animation', plugins_url( 'assets/css/vue2-animate.min.css', __FILE__ ), false, date( 'Ymd' ) );
+        wp_enqueue_style( 'a2zpm-utility', plugins_url( 'assets/css/utility.css', __FILE__ ), false, date( 'Ymd' ) );
+        // wp_enqueue_style( 'a2zpm-vue-animation', plugins_url( 'assets/css/vue2-animate.min.css', __FILE__ ), false, date( 'Ymd' ) );
         wp_enqueue_style( 'a2zpm-fontawesome', plugins_url( 'assets/css/font-awesome.min.css', __FILE__ ), false, date( 'Ymd' ) );
         wp_enqueue_style( 'a2zpm-selectize', plugins_url( 'assets/css/selectize.default.css', __FILE__ ), false, date( 'Ymd' ) );
+        wp_enqueue_style( 'a2zpm-styles', plugins_url( 'assets/css/a2zpm.css', __FILE__ ), false, date( 'Ymd' ) );
 
         // Load scripts for gloablly
-        // wp_enqueue_script( 'a2zpm-microplugin', plugins_url( 'assets/js/microplugin.min.js', __FILE__ ), array( 'jquery' ), false, true );
+        wp_enqueue_script( 'a2zpm-microplugin', plugins_url( 'assets/js/microplugin.min.js', __FILE__ ), array( 'jquery' ), false, true );
+        wp_enqueue_script( 'a2zpm-utility', plugins_url( 'assets/js/utility.js', __FILE__ ), array( 'jquery' ), false, true );
+        wp_enqueue_script( 'a2zpm-moment', plugins_url( 'assets/js/moment.min.js', __FILE__ ), array( 'jquery' ), false, true );
+        wp_enqueue_script( 'a2zpm-bootbox', plugins_url( 'assets/js/bootbox.min.js', __FILE__ ), array( 'jquery' ), false, true );
+        wp_enqueue_script( 'a2zpm-blockui', plugins_url( 'assets/js/jquery.blockUI.min.js', __FILE__ ), array( 'jquery' ), false, true );
         wp_enqueue_script( 'a2zpm-selectize', plugins_url( 'assets/js/standalone-selectize.min.js', __FILE__ ), array( 'jquery' ), false, true );
         wp_enqueue_script( 'a2zpm-vue', plugins_url( 'assets/js/vue.js', __FILE__ ), array( 'jquery', 'underscore' ), false, true );
         wp_enqueue_script( 'a2zpm-vue-router', plugins_url( 'assets/js/vue-router.js', __FILE__ ), array( 'a2zpm-vue', 'jquery', 'underscore' ), false, true );
         wp_enqueue_script( 'a2zpm-vuex', plugins_url( 'assets/js/vuex.js', __FILE__ ), array( 'a2zpm-vue', 'jquery', 'underscore' ), false, true );
+        wp_enqueue_script( 'a2zpm-vue-multiselect', plugins_url( 'assets/js/vue-multiselect.min.js', __FILE__ ), array( 'jquery', 'underscore' ), false, true );
         wp_enqueue_script( 'a2zpm-scripts', plugins_url( 'assets/js/a2zpm.js', __FILE__ ), array( 'a2zpm-vue' ), false, true );
 
         $localize_script = [
             'ajaxurl'            => admin_url( 'admin-ajax.php' ),
-            'nonce'              => wp_create_nonce( 'a2zpm_nonce' ),
+            'current_user'       => [
+                                        'ID'           => $current_user->ID,
+                                        'display_name' => $current_user->display_name,
+                                        'email'        => $current_user->user_email,
+                                        'avatar_url'   => get_avatar_url( $current_user->ID )
+                                    ],
+            'nonce'              => [
+                                        'global'          => wp_create_nonce( 'a2zpm_nonce' ),
+                                        'project_create'  => wp_create_nonce( 'a2zpm_project_create' ),
+                                        'get_projects'    => wp_create_nonce( 'a2zpm_get_projects' ),
+                                        'project_archive' => wp_create_nonce( 'a2zpm_archive_projects' ),
+                                        'project_delete'  => wp_create_nonce( 'a2zpm_delete_projects' ),
+                                    ],
             'project_categories' => get_terms( [
                                         'taxonomy'   => 'a2zpm_project_category',
                                         'hide_empty' => false,
-                                    ] )
+                                    ] ),
+            'project_label'      => a2zpm_get_project_label(),
+            'i18n_js'            => [
+                                        'yes' => __( 'Yes', A2ZPM_TEXTDOMAIN ),
+                                        'no' => __( 'No', A2ZPM_TEXTDOMAIN ),
+                                        'confirm' => __( 'Are you sure want to do this ?', A2ZPM_TEXTDOMAIN )
+                                    ]
         ];
 
 

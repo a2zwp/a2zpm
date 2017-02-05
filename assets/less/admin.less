@@ -2,6 +2,27 @@
     clear: both;
 }
 
+.a2zpm-loader {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: url('../images/spinner-2x.gif') center center no-repeat;
+    z-index: 99;
+    background-size: 20px;
+}
+
+.blockUI {
+    &.a2zpm-block-msg {
+        border: none !important;
+
+        .a2zpm-loader {
+            background-size: 30px;
+            width: 30px;
+            height: 30px;
+        }
+    }
+}
+
 .a2zpm-hide {
     display: none;
 }
@@ -12,6 +33,108 @@
 
 .a2zpm-left {
     float: left;
+}
+
+.bootbox {
+    .modal-dialog {
+        top: 20%;
+    }
+}
+
+.multiselect {
+    border-bottom: 1px solid #eee;
+
+    .multiselect__tags {
+        border: none;
+        background: none;
+
+        input {
+            border: none;
+            box-shadow: none;
+            transition: none;
+            background: none;
+        }
+
+        .multiselect__spinner {
+            background: none;
+        }
+    }
+
+    // ul.multiselect__content {
+    //     .multiselect__element {
+    //         .multiselect__option--highlight {
+    //             background: #0073aa;
+    //         }
+    //     }
+    // }
+}
+
+
+//** Default label background color
+@label-default-bg:            lighten(#000, 46.7%);
+//** Primary label background color
+@label-primary-bg:            #428bca;
+//** Success label background color
+@label-success-bg:            #5cb85c;
+//** Info label background color
+@label-info-bg:               #5bc0de;
+//** Warning label background color
+@label-warning-bg:            #f0ad4e;
+//** Danger label background color
+@label-error-bg:             #d9534f;
+
+.label-variant( @color ) {
+    background-color: @color;
+
+    &[href] {
+        &:hover,
+        &:focus {
+            background-color: darken(@color, 10%);
+        }
+    }
+}
+
+
+.a2zpm-label {
+    display: inline;
+    padding: .3em .7em .4em;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .20em;
+
+    &.label {
+        .label-variant( @label-default-bg );
+    }
+
+    &.label-default {
+        .label-variant( @label-default-bg );
+    }
+
+    &.label-primary {
+        .label-variant(@label-primary-bg);
+    }
+
+    &.label-success {
+        .label-variant(@label-success-bg);
+    }
+
+    &.label-error {
+        .label-variant(@label-error-bg);
+    }
+
+    &.label-info {
+        .label-variant(@label-info-bg);
+    }
+
+    &.label-warning {
+        .label-variant(@label-warning-bg);
+    }
+
 }
 
 form.a2zpm-from-horizontal {
@@ -92,25 +215,86 @@ form.a2zpm-from-horizontal {
         height: 100%;
 
         .project-wrapper {
-            height: 600px;
 
             .project-list {
                 ul {
-                    li {
-                        background: #fff;
-                        width: 30%;
+                    // display: flex;
+                    // flex-wrap: wrap;
+
+                    li.project-item {
+                        width: 32.4444%;
                         float: left;
+                        background: #fff;
                         margin-right: 1%;
+                        margin-bottom: 1%;
                         border: 1px solid #e5e5e5;
                         -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
                         -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
                         -o-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
                         -ms-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
                         box-shadow: 0 1px 1px rgba(0,0,0,0.04);
-                        padding: 13px;
+                        // padding: 13px;
 
                         &:nth-child(3n) {
                             margin-right: 0px;
+                        }
+
+                        .project-item-header {
+                            padding:10px;
+                            line-height: 25px;
+                            background: #fafafa;
+                            border-bottom: 1px solid #f1f1f1;
+                            position: relative;
+
+                            h2 {
+                                padding: 0px;
+                                margin: 0px;
+                                font-size: 14px;
+                            }
+
+                            span.settings {
+                                position: absolute;
+                                top:5px;
+                                right: 5px;
+                                color: #333;
+                                a {
+                                    text-decoration: none;
+
+                                    &.dropdown-toggle {
+                                        padding: 5px 8px;
+                                        cursor: pointer;
+                                        display: block;
+                                        font-size: 16px;
+                                        color: #9a9a9a;
+                                    }
+                                }
+                            }
+                        }
+
+                        .project-item-content {
+                            padding: 15px 10px;
+                            min-height: 170px;
+
+                            .project-item-category {
+                                border-bottom: 1px solid #f1f1f1;
+                                padding-bottom: 10px;
+                                font-size: 12px;
+                                color: #9a9a9a;
+                                font-style: italic;
+                            }
+
+                        }
+
+                        .project-item-footer {
+                            padding: 10px;
+                            background: #fafafa;
+                            height: 30px;
+                            line-height: 30px;
+
+                            .date {
+                                font-style: italic;
+                                color: #9a9a9a;
+                            }
                         }
                     }
                 }
@@ -121,8 +305,8 @@ form.a2zpm-from-horizontal {
                 float:left;
 
                 ul {
-                    li {
-                        width: 45.3%;
+                    li.project-item {
+                        width: 49%;
                         margin-right: 1%;
 
                         &:nth-child(3n) {
