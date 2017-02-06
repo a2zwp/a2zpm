@@ -34,9 +34,21 @@ window.a2zpmConfirm = function( message, callback ) {
             }
         },
         callback: function (result) {
-            callback( result );     
+            callback( result );
         }
     });
 }
 
+// Vue multiselect component
 Vue.component('Multiselect', VueMultiselect.default);
+
+// Tooltip directive
+Vue.directive('tooltip', {
+  bind: function( el, binding, vnode ) {
+    $(el).tooltip('show');
+  },
+  unbind: function( el, binding, vnode ) {
+    $(el).tooltip('destroy');
+  }
+});
+

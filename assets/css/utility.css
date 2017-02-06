@@ -76,7 +76,7 @@ tbody.collapse.in {
 .dropdown-menu {
   position: absolute;
   top: 100%;
-  right: -6px;
+  right: -13px;
   z-index: 1000;
   display: none;
   float: left;

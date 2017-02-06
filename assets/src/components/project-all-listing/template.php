@@ -12,20 +12,24 @@
                     <div class="project-item-header">
                         <h2>{{ project.title }}</h2>
 
-                        <span class="settings dropdown">
-                            <a data-target="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-                            </a>
-                            <ul class="dropdown-menu a2zpm-right" aria-labelledby="dropdownMenu1">
-                                <li><a href="#" @click.prevent="editProject( project )"><i class="fa fa-pencil" aria-hidden="true"></i> <?php _e( 'Edit', A2ZPM_TEXTDOMAIN ); ?></a></li>
-                                <li><a href="#"><i class="fa fa-users" aria-hidden="true"></i> <?php _e( 'Manage Team', A2ZPM_TEXTDOMAIN ); ?></a></li>
-                                <li><a href="#"><i class="fa fa-link" aria-hidden="true"></i> <?php _e( 'Lable change', A2ZPM_TEXTDOMAIN ); ?></a></li>
-                                <li><a href="#" @click.prevent="archiveProject( index, project )"><i class="fa fa-archive" aria-hidden="true"></i> <?php _e( 'Make Archive', A2ZPM_TEXTDOMAIN ); ?></a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#" @click.prevent="deleteProject( index, project )"><i class="fa fa-trash" aria-hidden="true"></i> <?php _e( 'Delete', A2ZPM_TEXTDOMAIN ); ?></a></li>
-                            </ul>
-                        </span>
-
+                        <div class="settings">
+                            <span class="manage-team">
+                                <a href="#" v-tooltip title="<?php _e( 'Manage team', A2ZPM_TEXTDOMAIN ); ?>"><i class="fa fa-user"></i></a>
+                            </span>
+                            <span class="dropdown">
+                                <a data-target="#" v-tooltip class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<?php _e( 'Settings', A2ZPM_TEXTDOMAIN ); ?>">
+                                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                </a>
+                                <ul class="dropdown-menu a2zpm-right" aria-labelledby="dropdownMenu1">
+                                    <li><a href="#" @click.prevent="editProject( project )"><i class="fa fa-pencil" aria-hidden="true"></i> <?php _e( 'Edit', A2ZPM_TEXTDOMAIN ); ?></a></li>
+                                    <li><a href="#"><i class="fa fa-users" aria-hidden="true"></i> <?php _e( 'Manage Team', A2ZPM_TEXTDOMAIN ); ?></a></li>
+                                    <li><a href="#"><i class="fa fa-link" aria-hidden="true"></i> <?php _e( 'Mark as completed', A2ZPM_TEXTDOMAIN ); ?></a></li>
+                                    <li><a href="#" @click.prevent="archiveProject( index, project )"><i class="fa fa-archive" aria-hidden="true"></i> <?php _e( 'Make Archive', A2ZPM_TEXTDOMAIN ); ?></a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#" @click.prevent="deleteProject( index, project )"><i class="fa fa-trash" aria-hidden="true"></i> <?php _e( 'Delete', A2ZPM_TEXTDOMAIN ); ?></a></li>
+                                </ul>
+                            </span>
+                        </div>
                     </div>
                     <div class="project-item-content">
                         <div class="project-item-category">
@@ -91,10 +95,10 @@
                     </multiselect>
                 </div>
 
-                <div class="form-group">
+                <!-- <div class="form-group"> -->
 
                     <!-- <template v-if="!isCreateNewUser"> -->
-                        <multiselect
+                        <!-- <multiselect
                             v-model="selectedUsers"
                             id="ajax"
                             label="display_name"
@@ -115,7 +119,7 @@
                         >
                             <template slot="noResult" scope="props"><?php _e( 'Opps no user found', A2ZPM_TEXTDOMAIN ); ?></template>
                         </multiselect>
-                        <!-- <a href="#" class="a2zpm-right" @click.prevent="isCreateNewUser = !isCreateNewUser"><?php _e( 'Invite new', A2ZPM_TEXTDOMAIN ); ?></a> -->
+ -->                        <!-- <a href="#" class="a2zpm-right" @click.prevent="isCreateNewUser = !isCreateNewUser"><?php _e( 'Invite new', A2ZPM_TEXTDOMAIN ); ?></a> -->
                     <!-- </template> -->
 
                     <!-- <template v-if="isCreateNewUser">
@@ -124,7 +128,7 @@
                         <span class="a2zpm-right"><a href="#" @click.prevent="isCreateNewUser = !isCreateNewUser"><?php _e( 'Cancel', A2ZPM_TEXTDOMAIN ); ?></a></span>
                         <div class="a2zpm-clearfix"></div>
                     </template> -->
-                </div>
+                <!-- </div> -->
             </form>
         </div>
 

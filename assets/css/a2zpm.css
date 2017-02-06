@@ -191,21 +191,21 @@ form.a2zpm-from-horizontal .form-group .form-control.selectize-control .selectiz
   margin: 0px;
   font-size: 14px;
 }
-#a2zpm-projects .project-section .project-wrapper .project-list ul li.project-item .project-item-header span.settings {
+#a2zpm-projects .project-section .project-wrapper .project-list ul li.project-item .project-item-header div.settings {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 10px;
+  right: 8px;
   color: #333;
+  font-size: 15px;
+  vertical-align: middle;
 }
-#a2zpm-projects .project-section .project-wrapper .project-list ul li.project-item .project-item-header span.settings a {
-  text-decoration: none;
+#a2zpm-projects .project-section .project-wrapper .project-list ul li.project-item .project-item-header div.settings span {
+  padding: 3px;
 }
-#a2zpm-projects .project-section .project-wrapper .project-list ul li.project-item .project-item-header span.settings a.dropdown-toggle {
-  padding: 5px 8px;
-  cursor: pointer;
-  display: block;
-  font-size: 16px;
+#a2zpm-projects .project-section .project-wrapper .project-list ul li.project-item .project-item-header div.settings span a {
   color: #9a9a9a;
+  cursor: pointer;
+  text-decoration: none;
 }
 #a2zpm-projects .project-section .project-wrapper .project-list ul li.project-item .project-item-content {
   padding: 15px 10px;

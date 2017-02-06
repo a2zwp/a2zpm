@@ -34,12 +34,22 @@ window.a2zpmConfirm = function( message, callback ) {
             }
         },
         callback: function (result) {
-            callback( result );     
+            callback( result );
         }
     });
 }
 
 Vue.component('Multiselect', VueMultiselect.default);
+
+Vue.directive('tooltip', {
+  bind: function( el, binding, vnode ) {
+    $(el).tooltip('show');
+  },
+  unbind: function( el, binding, vnode ) {
+    $(el).tooltip('destroy');
+  }
+});
+
 
 var globalMixins = {
 
@@ -272,6 +282,10 @@ var ProjectAllListing = {
                 this.clearDataObject( this.project, 'project' );
             }
         }
+    },
+
+    ready: function()  {
+        $('.a2zpm-tooltip').tooltip();
     },
 
     mounted: function() {

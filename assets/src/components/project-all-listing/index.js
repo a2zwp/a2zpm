@@ -186,6 +186,10 @@ var ProjectAllListing = {
         }
     },
 
+    ready: function()  {
+        $('.a2zpm-tooltip').tooltip();
+    },
+
     mounted: function() {
         this.resizeSidebar();
     },
