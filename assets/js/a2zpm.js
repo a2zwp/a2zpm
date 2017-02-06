@@ -39,8 +39,10 @@ window.a2zpmConfirm = function( message, callback ) {
     });
 }
 
+// Vue multiselect component
 Vue.component('Multiselect', VueMultiselect.default);
 
+// Tooltip directive
 Vue.directive('tooltip', {
   bind: function( el, binding, vnode ) {
     $(el).tooltip('show');
@@ -142,7 +144,12 @@ var ProjectAllListing = {
                     name: value.label
                 };
             } );
+        },
+
+        isEditProject: function() {
+            return ( this.project.ID != 0 );
         }
+
     },
 
     methods: {
@@ -222,7 +229,6 @@ var ProjectAllListing = {
                     } );
                 }
             } );
-
         },
 
         deleteProject: function( index, project ) {

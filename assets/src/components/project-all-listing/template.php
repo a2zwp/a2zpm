@@ -14,7 +14,7 @@
 
                         <div class="settings">
                             <span class="manage-team">
-                                <a href="#" v-tooltip title="<?php _e( 'Manage team', A2ZPM_TEXTDOMAIN ); ?>"><i class="fa fa-user"></i></a>
+                                <a href="#" v-tooltip title="<?php _e( 'Manage team for this project', A2ZPM_TEXTDOMAIN ); ?>"><i class="fa fa-user"></i></a>
                             </span>
                             <span class="dropdown">
                                 <a data-target="#" v-tooltip class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<?php _e( 'Settings', A2ZPM_TEXTDOMAIN ); ?>">
@@ -57,7 +57,8 @@
 
     <div class="sidebar-section" id="a2zpm-project-sidebar-section" v-show="isSlide">
         <div class="header">
-            <h1 ><?php _e( 'Create a project', A2ZPM_TEXTDOMAIN ) ?></h1>
+            <h1 v-if="!isEditProject"><?php _e( 'Create a project', A2ZPM_TEXTDOMAIN ) ?></h1>
+            <h1 v-else><?php _e( 'Edit this project', A2ZPM_TEXTDOMAIN ) ?></h1>
         </div>
         <div class="content">
             <form action="" class="a2zpm-from-horizontal">
@@ -133,7 +134,8 @@
         </div>
 
         <div class="footer">
-            <button class="button button-primary" @click.prevent="createProject"><?php _e( 'Create Project', A2ZPM_TEXTDOMAIN ); ?></button>
+            <button v-if="!isEditProject" class="button button-primary" @click.prevent="createProject"><?php _e( 'Create Project', A2ZPM_TEXTDOMAIN ); ?></button>
+            <button v-if="isEditProject" class="button button-primary" @click.prevent="createProject"><?php _e( 'Update Project', A2ZPM_TEXTDOMAIN ); ?></button>
             <button class="button button-default" @click.prevent="cancelCreateProject"><?php _e( 'Cancel', A2ZPM_TEXTDOMAIN ); ?></button>
         </div>
         <div class="a2zpm-clearfix"></div>

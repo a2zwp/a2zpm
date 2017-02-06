@@ -44,7 +44,12 @@ var ProjectAllListing = {
                     name: value.label
                 };
             } );
+        },
+
+        isEditProject: function() {
+            return ( this.project.ID != 0 );
         }
+
     },
 
     methods: {
@@ -124,7 +129,6 @@ var ProjectAllListing = {
                     } );
                 }
             } );
-
         },
 
         deleteProject: function( index, project ) {
