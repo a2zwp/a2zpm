@@ -164,7 +164,12 @@ class Ajax {
         $this->verify_nonce( 'a2zpm_get_projects', $_POST['nonce'] );
 
         $project = new Projects();
-        $projects = $project->get_projects();
+
+        if ( ! empty( $_POST['id'] ) ) {
+            $projects = $project->get_project( 'id', intval( $_POST['id'] ) );
+        } else {
+            $projects = $project->get_projects();
+        }
 
         if ( is_wp_error( $projects ) ) {
             wp_send_json_error( $projects->get_error_messages() );

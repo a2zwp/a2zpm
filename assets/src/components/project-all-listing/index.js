@@ -7,7 +7,8 @@ var ProjectAllListing = {
     data: function() {
         return {
             isSlide: false,
-            projects: [],
+            isManageTeam: false,
+            // projects: [],
             project: {
                 ID: 0,
                 title: '',
@@ -27,6 +28,10 @@ var ProjectAllListing = {
     },
 
     computed: {
+
+        projects: function() {
+            return this.$store.state.projects;
+        },
 
         categoryOptions: function() {
             return _.map( a2zpm.project_categories, function( value ) {
@@ -57,8 +62,9 @@ var ProjectAllListing = {
             this.isSlide = !this.isSlide;
         },
 
-        cancelCreateProject: function() {
+        cancelSidebar: function() {
             this.isSlide = false;
+            this.isManageTeam = false;
         },
 
         createAt: function(date) {
@@ -76,7 +82,8 @@ var ProjectAllListing = {
 
             this.postRequest( data,
             function(resp) {
-                self.projects = resp.data;
+                // self.projects = resp.data;
+                self.$store.state.projects = resp.data;
                 a2zpmUnblock( 'a2zpm-project-list' );
                 self.isSlide = false;
             },
@@ -153,6 +160,75 @@ var ProjectAllListing = {
             } );
         },
 
+        manageTeam: function( project ) {
+            this.isSlide = true;
+            this.isManageTeam = true;
+        },
+
+        saveTeam: function() {
+
+        },
+
+        pushProjectUser: function( value, id ) {
+
+        },
+
+        selectizeSearchUser: function( options, selected ) {
+
+            var emailRgx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+            var selectize = $('.a2zpm-serach-user').selectize({
+                persist: false,
+                valueField: 'id',
+                options: options,
+                labelField: 'display_name',
+                searchField: ['display_name'],
+                plugins: ['remove_button'],
+                render: {
+                    option: function( item, escape ) {
+                        return '<div>' + item.display_name+ '( ' + item.user_email + ' )' + '</div>';
+                    }
+                },
+                createFilter: function(input) {
+                    var match;
+                    match = input.match( emailRgx );
+                    if (match) {
+                        return !this.options.hasOwnProperty( match[0] );
+                    }
+                    return false;
+                },
+                create: function(input) {
+                    if ( emailRgx.test( input ) ) {
+                        return { id: input, display_name: input };
+                    }
+
+                    return false;
+                },
+
+                load: function(query, callback) {
+                    if (!query.length) return callback();
+
+                    var data = {
+                        action : 'a2zpm-search-user',
+                        query: encodeURIComponent(query)
+                    }
+
+                    $.post( a2zpm.ajaxurl, data, function( resp ) {
+
+                        if ( resp.success ) {
+                            var result = $.map( resp.data, function( value, index ) {
+                                return [value];
+                            });
+
+                            callback( result );
+                        } else {
+                            callback();
+                        }
+                    });
+                }
+            });
+        },
+
         limitText (count) {
             return `and ${count} other countries`
         },
@@ -195,6 +271,7 @@ var ProjectAllListing = {
     },
 
     mounted: function() {
+        this.selectizeSearchUser();
         this.resizeSidebar();
     },
 

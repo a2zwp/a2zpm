@@ -42,6 +42,7 @@ class Projects {
         $projects =[];
 
         $defaults = array(
+            'ID'             => 0,
             'post_status'    => ['publish'],
             'order'          => 'DESC',
             'orderby'        => 'date',
@@ -120,6 +121,120 @@ class Projects {
 
                 }, $users );
             }
+        }
+
+        return $projects;
+    }
+
+    /**
+    * Get a project using by fields
+    *
+    * @since 1.0.0
+    *
+    * @return void
+    **/
+    public function get_project( $field, $value ) {
+        global $wpdb;
+
+        if ( empty( $field ) ) {
+            return new WP_Error( 'no-field', __( 'No field provided', A2ZPM_TEXTDOMAIN ) );
+        }
+
+
+        if ( empty( $value ) ) {
+            return new WP_Error( 'no-value', __( 'No value provided', A2ZPM_TEXTDOMAIN ) );
+        }
+
+        $cache_key = 'a2zpm-project-by-' . md5( serialize( $value ) );
+        $project   = wp_cache_get( $cache_key, 'a2zpm' );
+        $projects  = [];
+
+        if ( false === $project ) {
+            $args = [
+                'post_type' => 'a2zpm_project',
+            ];
+
+            // Check if field is ID or id
+            // @TODO: Need to check others fields for fetching projects
+            if ( 'id' === strtolower( $field ) ) {
+                if ( is_array( $value ) ) {
+                    $args['post__in'] = (array)$value;
+                } else {
+                    $args['p'] = intval( $value );
+                }
+            }
+
+            add_filter( 'posts_fields', [ $this, 'select_users_clause' ] );
+            add_filter( 'posts_join', [ $this, 'join_user_table' ] );
+            add_filter( 'posts_groupby', [ $this, 'group_by_clause' ] );
+            // add_filter( 'posts_where', array( $this, 'get_project_where_user' ), 10, 3 );
+
+            $query = new \WP_Query( apply_filters( 'a2zpm_get_project_by', $args ) );
+
+            remove_filter( 'posts_fields', [ $this, 'select_users_clause' ] );
+            remove_filter( 'posts_groupby', [ $this, 'group_by_clause' ] );
+            remove_filter( 'posts_join', [ $this, 'join_user_table' ] );
+
+            if ( $query->posts ) {
+                foreach ( $query->posts as $key => $project ) {
+                    $projects[$key] = [
+                        'ID'          => $project->ID,
+                        'title'       => $project->post_title,
+                        'content'     => $project->post_content,
+                        'created_at'  => $project->post_date
+                    ];
+
+                    // Mapping project categories ( @TODO: If Needs, then change as multiple category );
+                    $category = wp_get_post_terms( $project->ID, 'a2zpm_project_category' );
+                    $map_category = [];
+                    if ( ! empty( $category ) ) {
+                        $map_category = array_map( function( $item ) {
+                            return [
+                                'id' => $item->term_id,
+                                'name' => $item->name
+                            ];
+                        }, $category );
+                    }
+                    $projects[$key]['category'] = reset( $map_category );
+
+                    // Mapping project labels
+                    $label = get_post_meta( $project->ID, '_a2zpm_project_label', true );
+                    $map_label = [];
+                    if ( ! empty( $label ) ) {
+                        $label_data = a2zpm_get_project_label( $label );
+                        $map_label =  [
+                            'id' => $label,
+                            'name' => !empty( $label_data['label'] ) ? $label_data['label'] : ''
+                        ];
+                    }
+                    $projects[$key]['label'] = $map_label;
+
+                    $users = explode( ',', $project->user_id );
+
+                    $projects[$key]['users'] = array_map( function( $user ) {
+                        $user_data  = \get_user_by( 'id', $user );
+                        $first_name = !empty( $user_data->first_name ) ? $user_data->first_name : $user_data->display_name;
+                        $last_name  = !empty( $user_data->last_name ) ? $user_data->last_name : '';
+                        $full_name  = ( $first_name || $last_name ) ? $first_name . ' ' . $last_name : $user_data->display_name;
+                        $avatar_url = get_avatar_url( $user_data->ID );
+
+                        return [
+                            'id'         => $user_data->ID,
+                            'first_name' => $first_name,
+                            'last_name'  => $last_name,
+                            'full_name'  => trim( $full_name ),
+                            'avatar_url' => $avatar_url
+                        ];
+
+                    }, $users );
+                }
+            }
+
+            if ( count( $projects ) === 1 ) {
+                $projects = reset( $projects );
+            }
+
+            wp_cache_set( $cache_key, $projects, 'a2zpm' );
         }
 
         return $projects;

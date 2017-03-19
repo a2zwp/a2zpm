@@ -27,6 +27,7 @@ module.exports = function(grunt) {
                 files: {
                     '<%= dirs.js %>/a2zpm.js': [
                         '<%= dirs.src %>/start.js',
+                        '<%= dirs.src %>/stores.js',
                         '<%= dirs.src %>/mixins/*.js',
                         '<%= dirs.src %>/components/**/*.js',
                         '<%= dirs.src %>/routes.js',
