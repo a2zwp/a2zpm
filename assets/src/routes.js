@@ -4,51 +4,56 @@
 // Vue.extend(), or just a component options object.
 // We'll talk about nested routes later.
 var routes = [
-  // { path: '/foo', component: Projects },
-  // { path: '/bar', component: Bar },
-  { path: '/projects', component: ProjectAllListing },
-  {
-    path: '/project/:id', name: 'singleproject', component: SigleProject,
-    children : [
-        {
-            path: 'tasklists',
-            component: ProjectTasklists,
-            children : [
-                {
-                    path: 'inbox',
-                    component: SingleInboxTasklist
-                },
-                {
-                    path: 'my-task',
-                    component: SingleTaskList
-                },
+    { path: '/projects', component: ProjectAllListing, name: 'a2zpm_all_project',
+        children: [
+            { path: 'add', component: ProjectAdd, name: 'a2zpm_project_add' },
+            { path: 'edit/:id', component: ProjectEdit, name: 'a2zpm_project_edit' },
+        ]
 
-                {
-                    path: 'pinned',
-                    component: SingleTaskList
-                },
+    },
 
-                {
-                    path: ':listID',
-                    component: SingleTaskList
-                },
 
-                {
-                    path: 'tasks/:taskID',
-                    component: SingleTask
-                },
+    {
+        path: '/project/:id', name: 'singleproject', component: SigleProject,
+        children : [
+            {
+                path: 'tasklists',
+                component: ProjectTasklists,
+                children : [
+                    {
+                        path: 'inbox',
+                        component: SingleInboxTasklist
+                    },
+                    {
+                        path: 'my-task',
+                        component: SingleTaskList
+                    },
 
-            ]
-        },
+                    {
+                        path: 'pinned',
+                        component: SingleTaskList
+                    },
 
-        {
-            path: 'files',
-            component: ProjectFiles
-        }
+                    {
+                        path: ':listID',
+                        component: SingleTaskList
+                    },
 
-    ]
-  },
-  { path: '/*', component: ProjectAllListing }
+                    {
+                        path: 'tasks/:taskID',
+                        component: SingleTask
+                    },
+
+                ]
+            },
+            {
+                path: 'files',
+                component: ProjectFiles
+            }
+
+        ]
+    },
+    { path: '/', component: ProjectAllListing, name: 'a2zpm_home' }
 ]
 
 // 3. Create the router instance and pass the `routes` option

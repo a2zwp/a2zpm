@@ -112,17 +112,13 @@ var globalMixins = {
 }
 
 
-var ProjectAllListing = {
-
-    template: '#tmpl-a2zpm-project-all-listing',
+var ProjectAdd = {
+    template: '#tmpl-a2zpm-project-add-form',
 
     mixins: [ globalMixins ],
 
     data: function() {
         return {
-            isSlide: false,
-            isManageTeam: false,
-            // projects: [],
             project: {
                 ID: 0,
                 title: '',
@@ -131,21 +127,10 @@ var ProjectAllListing = {
                 label: '',
                 users: []
             },
-            selected: {
-                category: {},
-                label: {}
-            },
-            selectedUsers: {},
-            users: [],
-            isLoading: false
         }
     },
 
     computed: {
-
-        projects: function() {
-            return this.$store.state.projects;
-        },
 
         categoryOptions: function() {
             return _.map( a2zpm.project_categories, function( value ) {
@@ -163,48 +148,15 @@ var ProjectAllListing = {
                     name: value.label
                 };
             } );
-        },
-
-        isEditProject: function() {
-            return ( this.project.ID != 0 );
         }
 
     },
 
     methods: {
-        toggleProjectSidebar: function() {
-            this.isSlide = !this.isSlide;
-        },
 
         cancelSidebar: function() {
-            this.isSlide = false;
-            this.isManageTeam = false;
-        },
-
-        createAt: function(date) {
-            return moment( date ).fromNow();
-        },
-
-        fetchProjects: function() {
-            var self = this;
-            var data = {
-                action: 'a2zpm-get-all-projects',
-                nonce: a2zpm.nonce.get_projects
-            };
-
-            a2zpmBlock( 'a2zpm-project-list', '#f1f1f1' );
-
-            this.postRequest( data,
-            function(resp) {
-                // self.projects = resp.data;
-                self.$store.state.projects = resp.data;
-                a2zpmUnblock( 'a2zpm-project-list' );
-                self.isSlide = false;
-            },
-            function(resp) {
-                alert('Something wrong');
-                a2zpmUnblock( 'a2zpm-project-list' );
-            });
+            router.replace( { name: 'a2zpm_home' } );
+            Event.$emit( 'a2zpm-project-isSlide', false );
         },
 
         createProject: function() {
@@ -219,15 +171,70 @@ var ProjectAllListing = {
 
             this.postRequest( data, function(resp){
                 a2zpmUnblock( 'a2zpm-project-sidebar-section' );
-                self.fetchProjects();
+                self.clearDataObject( self.project, 'project' );
+                Event.$emit( 'a2zpm-fetch-all-projects');
             }, function(resp) {
                 a2zpmUnblock( 'a2zpm-project-sidebar-section' );
             } );
+        }
+    },
+
+    mounted: function() {
+        this.resizeSidebar();
+    }
+}
+var ProjectAllListing = {
+
+    template: '#tmpl-a2zpm-project-all-listing',
+
+    mixins: [ globalMixins ],
+
+    data: function() {
+        return {
+            isLoading: false,
+            isSlide: false,
+            a2zpm: a2zpm
+        }
+    },
+
+    computed: {
+        projects: function() {
+            return this.$store.state.projects;
+        }
+    },
+
+    methods: {
+
+        createAt: function(date) {
+            return moment( date ).fromNow();
         },
 
-        editProject: function( projectData ) {
-            this.isSlide = true;
-            this.setDataObject( projectData, 'project' );
+        showProjectLabel: function( label ) {
+            if ( typeof label.id == 'undefined' ) {
+                return '';
+            }
+
+            return 'label-' + a2zpm.project_label[label.id].class;
+        },
+
+        fetchProjects: function() {
+            var self = this;
+            var data = {
+                action: 'a2zpm-get-all-projects',
+                nonce: a2zpm.nonce.get_projects
+            };
+
+            a2zpmBlock( 'a2zpm-project-list', '#f1f1f1' );
+
+            this.postRequest( data,
+            function(resp) {
+                self.$store.state.projects = resp.data;
+                a2zpmUnblock( 'a2zpm-project-list' );
+            },
+            function(resp) {
+                alert('Something wrong');
+                a2zpmUnblock( 'a2zpm-project-list' );
+            });
         },
 
         archiveProject: function( index, project ) {
@@ -272,19 +279,6 @@ var ProjectAllListing = {
                     } );
                 }
             } );
-        },
-
-        manageTeam: function( project ) {
-            this.isSlide = true;
-            this.isManageTeam = true;
-        },
-
-        saveTeam: function() {
-
-        },
-
-        pushProjectUser: function( value, id ) {
-
         },
 
         selectizeSearchUser: function( options, selected ) {
@@ -369,35 +363,127 @@ var ProjectAllListing = {
         }
     },
 
-    watch: {
-        // call again the method if the route changes
-        // '$route': 'fetchProjects',
-
-        'isSlide': function( value ) {
-            if ( ! value ) {
-                this.clearDataObject( this.project, 'project' );
-            }
-        }
-    },
-
-    ready: function()  {
-        $('.a2zpm-tooltip').tooltip();
-    },
-
-    mounted: function() {
-        this.selectizeSearchUser();
-        this.resizeSidebar();
-    },
-
     created: function() {
         var self = this;
+
+        // Set slide constant true/false depending on routing( if sidebar is present or not )
+        if ( 'a2zpm_project_add' == this.$route.name || 'a2zpm_project_edit' == this.$route.name  ) {
+            self.isSlide = true;
+        }
 
         self.fetchProjects();
 
         Event.$on( 'a2zpm-fetch-all-projects', function() {
             self.fetchProjects();
         } );
+
+        Event.$on( 'a2zpm-project-isSlide', function( $isSlide ) {
+            self.isSlide = $isSlide;
+        } );
     }
+}
+var ProjectEdit = {
+    template: '#tmpl-a2zpm-project-edit-form',
+
+    mixins: [ globalMixins ],
+
+    data: function() {
+        return {
+            project: {
+                ID: 0,
+                title: '',
+                content: '',
+                category: '',
+                label: '',
+                users: []
+            },
+        }
+    },
+
+    computed: {
+
+        categoryOptions: function() {
+            return _.map( a2zpm.project_categories, function( value ) {
+                return {
+                    id : value.term_id,
+                    name: value.name
+                };
+            } );
+        },
+
+        lableOptions: function() {
+            return _.map( a2zpm.project_label, function( value, key ) {
+                return {
+                    id : key,
+                    name: value.label
+                };
+            } );
+        }
+
+    },
+
+    watch: {
+        '$route': 'fetchProject'
+    },
+
+    methods: {
+
+        cancelSidebar: function() {
+            router.replace( { name: 'a2zpm_home' } );
+            Event.$emit( 'a2zpm-project-isSlide', false );
+        },
+
+        fetchProject: function() {
+            var self = this;
+            var data = {
+                id: this.$route.params.id,
+                action: 'a2zpm-get-all-projects',
+                nonce: a2zpm.nonce.get_projects
+            };
+
+            a2zpmBlock( 'a2zpm-project-sidebar-section', '#fff' );
+
+            this.postRequest( data,
+            function(resp) {
+                self.setDataObject( resp.data, 'project' );
+                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+            },
+            function(resp) {
+                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+                alert( 'Something wrong' );
+            });
+        },
+
+        updateProject: function() {
+            var self = this,
+                data = {
+                    action: 'a2zpm-create-project',
+                    formdata: this.project,
+                    nonce: a2zpm.nonce.project_create
+                };
+
+            a2zpmBlock( 'a2zpm-project-sidebar-section', '#fff' );
+
+            this.postRequest( data, function(resp){
+                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+                Event.$emit( 'a2zpm-fetch-all-projects');
+                router.replace( { name: 'a2zpm_home' } );
+                Event.$emit( 'a2zpm-project-isSlide', false );
+            }, function(resp) {
+                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+            } );
+        },
+
+        editProject: function() {
+            this.setDataObject( this.projectData, 'project' );
+        }
+    },
+
+    mounted: function() {
+        this.resizeSidebar();
+        this.fetchProject();
+    }
+
 }
 var ProjectFiles = {
     template: '#tmpl-a2zpm-project-files',
@@ -575,51 +661,56 @@ var SingleInboxTasklist = {
 // Vue.extend(), or just a component options object.
 // We'll talk about nested routes later.
 var routes = [
-  // { path: '/foo', component: Projects },
-  // { path: '/bar', component: Bar },
-  { path: '/projects', component: ProjectAllListing },
-  {
-    path: '/project/:id', name: 'singleproject', component: SigleProject,
-    children : [
-        {
-            path: 'tasklists',
-            component: ProjectTasklists,
-            children : [
-                {
-                    path: 'inbox',
-                    component: SingleInboxTasklist
-                },
-                {
-                    path: 'my-task',
-                    component: SingleTaskList
-                },
+    { path: '/projects', component: ProjectAllListing, name: 'a2zpm_all_project',
+        children: [
+            { path: 'add', component: ProjectAdd, name: 'a2zpm_project_add' },
+            { path: 'edit/:id', component: ProjectEdit, name: 'a2zpm_project_edit' },
+        ]
 
-                {
-                    path: 'pinned',
-                    component: SingleTaskList
-                },
+    },
 
-                {
-                    path: ':listID',
-                    component: SingleTaskList
-                },
 
-                {
-                    path: 'tasks/:taskID',
-                    component: SingleTask
-                },
+    {
+        path: '/project/:id', name: 'singleproject', component: SigleProject,
+        children : [
+            {
+                path: 'tasklists',
+                component: ProjectTasklists,
+                children : [
+                    {
+                        path: 'inbox',
+                        component: SingleInboxTasklist
+                    },
+                    {
+                        path: 'my-task',
+                        component: SingleTaskList
+                    },
 
-            ]
-        },
+                    {
+                        path: 'pinned',
+                        component: SingleTaskList
+                    },
 
-        {
-            path: 'files',
-            component: ProjectFiles
-        }
+                    {
+                        path: ':listID',
+                        component: SingleTaskList
+                    },
 
-    ]
-  },
-  { path: '/*', component: ProjectAllListing }
+                    {
+                        path: 'tasks/:taskID',
+                        component: SingleTask
+                    },
+
+                ]
+            },
+            {
+                path: 'files',
+                component: ProjectFiles
+            }
+
+        ]
+    },
+    { path: '/', component: ProjectAllListing, name: 'a2zpm_home' }
 ]
 
 // 3. Create the router instance and pass the `routes` option

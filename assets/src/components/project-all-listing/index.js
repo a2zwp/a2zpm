@@ -6,69 +6,30 @@ var ProjectAllListing = {
 
     data: function() {
         return {
+            isLoading: false,
             isSlide: false,
-            isManageTeam: false,
-            // projects: [],
-            project: {
-                ID: 0,
-                title: '',
-                content: '',
-                category: '',
-                label: '',
-                users: []
-            },
-            selected: {
-                category: {},
-                label: {}
-            },
-            selectedUsers: {},
-            users: [],
-            isLoading: false
+            a2zpm: a2zpm
         }
     },
 
     computed: {
-
         projects: function() {
             return this.$store.state.projects;
-        },
-
-        categoryOptions: function() {
-            return _.map( a2zpm.project_categories, function( value ) {
-                return {
-                    id : value.term_id,
-                    name: value.name
-                };
-            } );
-        },
-
-        lableOptions: function() {
-            return _.map( a2zpm.project_label, function( value, key ) {
-                return {
-                    id : key,
-                    name: value.label
-                };
-            } );
-        },
-
-        isEditProject: function() {
-            return ( this.project.ID != 0 );
         }
-
     },
 
     methods: {
-        toggleProjectSidebar: function() {
-            this.isSlide = !this.isSlide;
-        },
-
-        cancelSidebar: function() {
-            this.isSlide = false;
-            this.isManageTeam = false;
-        },
 
         createAt: function(date) {
             return moment( date ).fromNow();
+        },
+
+        showProjectLabel: function( label ) {
+            if ( typeof label.id == 'undefined' ) {
+                return '';
+            }
+
+            return 'label-' + a2zpm.project_label[label.id].class;
         },
 
         fetchProjects: function() {
@@ -82,38 +43,13 @@ var ProjectAllListing = {
 
             this.postRequest( data,
             function(resp) {
-                // self.projects = resp.data;
                 self.$store.state.projects = resp.data;
                 a2zpmUnblock( 'a2zpm-project-list' );
-                self.isSlide = false;
             },
             function(resp) {
                 alert('Something wrong');
                 a2zpmUnblock( 'a2zpm-project-list' );
             });
-        },
-
-        createProject: function() {
-            var self = this,
-                data = {
-                    action: 'a2zpm-create-project',
-                    formdata: this.project,
-                    nonce: a2zpm.nonce.project_create
-                };
-
-            a2zpmBlock( 'a2zpm-project-sidebar-section', '#fff' );
-
-            this.postRequest( data, function(resp){
-                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
-                self.fetchProjects();
-            }, function(resp) {
-                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
-            } );
-        },
-
-        editProject: function( projectData ) {
-            this.isSlide = true;
-            this.setDataObject( projectData, 'project' );
         },
 
         archiveProject: function( index, project ) {
@@ -158,19 +94,6 @@ var ProjectAllListing = {
                     } );
                 }
             } );
-        },
-
-        manageTeam: function( project ) {
-            this.isSlide = true;
-            this.isManageTeam = true;
-        },
-
-        saveTeam: function() {
-
-        },
-
-        pushProjectUser: function( value, id ) {
-
         },
 
         selectizeSearchUser: function( options, selected ) {
@@ -255,33 +178,22 @@ var ProjectAllListing = {
         }
     },
 
-    watch: {
-        // call again the method if the route changes
-        // '$route': 'fetchProjects',
-
-        'isSlide': function( value ) {
-            if ( ! value ) {
-                this.clearDataObject( this.project, 'project' );
-            }
-        }
-    },
-
-    ready: function()  {
-        $('.a2zpm-tooltip').tooltip();
-    },
-
-    mounted: function() {
-        this.selectizeSearchUser();
-        this.resizeSidebar();
-    },
-
     created: function() {
         var self = this;
+
+        // Set slide constant true/false depending on routing( if sidebar is present or not )
+        if ( 'a2zpm_project_add' == this.$route.name || 'a2zpm_project_edit' == this.$route.name  ) {
+            self.isSlide = true;
+        }
 
         self.fetchProjects();
 
         Event.$on( 'a2zpm-fetch-all-projects', function() {
             self.fetchProjects();
+        } );
+
+        Event.$on( 'a2zpm-project-isSlide', function( $isSlide ) {
+            self.isSlide = $isSlide;
         } );
     }
 }

@@ -137,12 +137,12 @@ class Projects {
         global $wpdb;
 
         if ( empty( $field ) ) {
-            return new WP_Error( 'no-field', __( 'No field provided', A2ZPM_TEXTDOMAIN ) );
+            return new \WP_Error( 'no-field', __( 'No field provided', A2ZPM_TEXTDOMAIN ) );
         }
 
 
         if ( empty( $value ) ) {
-            return new WP_Error( 'no-value', __( 'No value provided', A2ZPM_TEXTDOMAIN ) );
+            return new \WP_Error( 'no-value', __( 'No value provided', A2ZPM_TEXTDOMAIN ) );
         }
 
         $cache_key = 'a2zpm-project-by-' . md5( serialize( $value ) );
@@ -266,7 +266,7 @@ class Projects {
         $args['post_type'] = 'a2zpm_project';
 
         if ( empty( $args['post_title'] ) ) {
-            return new WP_Error( 'no-title', __( 'Project title must be required', A2ZPM_TEXTDOMAIN ) );
+            return new \WP_Error( 'no-title', __( 'Project title must be required', A2ZPM_TEXTDOMAIN ) );
         }
 
         if ( empty( $args['ID'] ) ) {
@@ -307,13 +307,13 @@ class Projects {
     **/
     public function archive_projects( $id ) {
         if ( empty( $id ) ) {
-            return new WP_Error( 'no-project-id', __( 'No project found for archiving', A2ZPM_TEXTDOMAIN ) );
+            return new \WP_Error( 'no-project-id', __( 'No project found for archiving', A2ZPM_TEXTDOMAIN ) );
         }
 
         $is_archive = wp_trash_post( $id );
 
         if ( ! $is_archive ) {
-            return new WP_Error( 'no-project-id', __( 'Project are not successfully archived', A2ZPM_TEXTDOMAIN ) );
+            return new \WP_Error( 'no-project-id', __( 'Project are not successfully archived', A2ZPM_TEXTDOMAIN ) );
         }
 
         return $is_archive;
@@ -330,7 +330,7 @@ class Projects {
     **/
     public function delete_projects( $id ) {
         if ( empty( $id ) ) {
-            return new WP_Error( 'no-project-id', __( 'No project found for deleting', A2ZPM_TEXTDOMAIN ) );
+            return new \WP_Error( 'no-project-id', __( 'No project found for deleting', A2ZPM_TEXTDOMAIN ) );
         }
 
         $is_deleted = wp_delete_post( $id, true );
@@ -340,7 +340,7 @@ class Projects {
         }
 
         if ( ! $is_deleted ) {
-            return new WP_Error( 'no-project-id', __( 'Project are not successfully deleted', A2ZPM_TEXTDOMAIN ) );
+            return new \WP_Error( 'no-project-id', __( 'Project are not successfully deleted', A2ZPM_TEXTDOMAIN ) );
         }
 
         return $is_deleted;
@@ -402,7 +402,7 @@ class Projects {
         $result = $wpdb->delete( $table, array( 'project_id' => $project_id ) );
 
         if ( ! $result ) {
-            return new WP_Error( 'no-project-id', __( 'Something wrong to delete assignable users', A2ZPM_TEXTDOMAIN ) );
+            return new \WP_Error( 'no-project-id', __( 'Something wrong to delete assignable users', A2ZPM_TEXTDOMAIN ) );
         }
 
         return $result;
