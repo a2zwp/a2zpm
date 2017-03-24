@@ -13,6 +13,10 @@ var ProjectAdd = {
                 label: '',
                 users: []
             },
+
+            users: [],
+            selectedUsers: {},
+            isLoading: false
         }
     },
 
@@ -61,6 +65,27 @@ var ProjectAdd = {
                 Event.$emit( 'a2zpm-fetch-all-projects');
             }, function(resp) {
                 a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+            } );
+        },
+
+        asyncFind (query) {
+            if ( query.length < 2 ) {
+                return;
+            }
+
+            var self = this;
+            self.isLoading = true;
+            var data = {
+                action : 'a2zpm-search-user',
+                exclude: a2zpm.current_user.ID,
+                query : query
+            };
+
+            self.postRequest( data, function(resp) {
+                self.isLoading = false;
+                self.users = _.map( resp.data, function( el ) { return el } );
+            }, function(resp) {
+                console.log( 'Something wrong try later' );
             } );
         }
     },

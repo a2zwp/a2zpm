@@ -38,6 +38,28 @@
                 </multiselect>
             </div>
 
+            <div class="form-group">
+                <multiselect
+                    v-model="selectedUsers"
+                    id="ajax"
+                    label="display_name"
+                    track-by="ID"
+                    placeholder="<?php _e( 'Type to search', A2ZPM_TEXTDOMAIN ); ?>"
+                    :options="users"
+                    :searchable="true"
+                    :loading="isLoading"
+                    :internal-search="false"
+                    :clear-on-select="true"
+                    :close-on-select="true"
+                    :reset-after="true"
+                    :options-limit="100"
+                    :limit="3"
+                    @search-change="asyncFind"
+                >
+                    <template slot="noResult" scope="props"><?php _e( 'Opps no user found', A2ZPM_TEXTDOMAIN ); ?></template>
+                </multiselect>
+            </div>
+
         </form>
     </div>
 

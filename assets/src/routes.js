@@ -9,7 +9,6 @@ var routes = [
             { path: 'add', component: ProjectAdd, name: 'a2zpm_project_add' },
             { path: 'edit/:id', component: ProjectEdit, name: 'a2zpm_project_edit' },
         ]
-
     },
 
 
