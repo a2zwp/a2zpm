@@ -182,7 +182,7 @@ var ProjectAllListing = {
         var self = this;
 
         // Set slide constant true/false depending on routing( if sidebar is present or not )
-        if ( 'a2zpm_project_add' == this.$route.name || 'a2zpm_project_edit' == this.$route.name  ) {
+        if ( 'a2zpm_project_add' == this.$route.name || 'a2zpm_project_edit' == this.$route.name || 'a2zpm_project_manage_team' == this.$route.name ) {
             self.isSlide = true;
         }
 

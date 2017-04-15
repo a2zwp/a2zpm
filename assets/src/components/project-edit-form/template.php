@@ -1,6 +1,6 @@
 <div class="sidebar-section" id="a2zpm-project-sidebar-section">
     <div class="header">
-        <h1><?php _e( 'Edit this project', A2ZPM_TEXTDOMAIN ) ?></h1>
+        <h1><i class="fa fa-pencil"></i>&nbsp; <?php _e( 'Edit Project', A2ZPM_TEXTDOMAIN ); ?></h1>
     </div>
     <div class="content">
         <form action="" class="a2zpm-from-horizontal">
@@ -37,7 +37,6 @@
                   <span slot="noResult"><?php _e( 'Oops! No label found', A2ZPM_TEXTDOMAIN ); ?></span>
                 </multiselect>
             </div>
-
         </form>
     </div>
 

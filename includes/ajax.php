@@ -19,6 +19,7 @@ class Ajax {
         add_action( 'wp_ajax_a2zpm-get-all-projects', [ $this, 'get_project' ], 10 );
         add_action( 'wp_ajax_a2zpm-archive-projects', [ $this, 'archive_project' ], 10 );
         add_action( 'wp_ajax_a2zpm-delete-projects', [ $this, 'delete_project' ], 10 );
+        add_action( 'wp_ajax_a2zpm-update-project-team', [ $this, 'update_project_team' ], 10 );
     }
 
     /**
@@ -52,7 +53,7 @@ class Ajax {
         }
 
         if ( ! empty( $_POST['exclude'] ) ) {
-            $exclude = array_map( 'intval', explode( ',', $_POST['exclude'] ) );
+            $exclude = is_array( $_POST['exclude'] ) ? array_map( 'intval', $_POST['exclude'] ) : array_map( 'intval', explode( ',', $_POST['exclude'] ) );
         }
 
         $found_customers = array();
@@ -192,8 +193,8 @@ class Ajax {
 
         $id = !empty( $_POST['id'] ) ? (int)$_POST['id'] : '';
 
-        $project = new Projects();
-        $archive = $project->archive_projects( $id );
+        $project = new Projects( $id );
+        $archive = $project->archive_projects();
 
         if ( is_wp_error( $archive ) ) {
             wp_send_json_error( $archive->get_error_messages() );
@@ -216,14 +217,33 @@ class Ajax {
 
         $id = !empty( $_POST['id'] ) ? (int)$_POST['id'] : '';
 
-        $project = new Projects();
-        $deleted = $project->delete_projects( $id );
+        $project = new Projects( $id );
+        $deleted = $project->delete_projects();
 
         if ( is_wp_error( $deleted ) ) {
             wp_send_json_error( $deleted->get_error_messages() );
         }
 
         wp_send_json_success( $id );
+    }
+
+    /**
+    * Udpate project team
+    *
+    * @since 1.0.0
+    *
+    * @return void
+    **/
+    public function update_project_team() {
+        $this->verify_nonce( 'a2zpm_update_team', $_POST['nonce'] );
+
+        $project_id = !empty( $_POST['id'] ) ? (int)$_POST['id'] : '';
+        $users      = !empty( $_POST['users'] ) ? $_POST['users'] : [];
+
+        $project = new Projects( $project_id );
+        $project->project_assign_user( $users );
+
+        wp_send_json_success( $project_id );
     }
 
 }

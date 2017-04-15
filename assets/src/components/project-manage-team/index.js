@@ -1,46 +1,22 @@
-var ProjectAdd = {
-    template: '#tmpl-a2zpm-project-add-form',
+var ProjectManageTeam = {
+    template: '#tmpl-a2zpm-project-manage-team',
 
     mixins: [ globalMixins ],
 
     data: function() {
         return {
-            project: {
-                ID: 0,
-                title: '',
-                content: '',
-                category: '',
-                label: '',
-                users: []
-            },
-
+            project: {},
             users: [],
             selectedUsers: {},
             isLoading: false
         }
-    },
-
-    computed: {
-
-        categoryOptions: function() {
-            return _.map( a2zpm.project_categories, function( value ) {
-                return {
-                    id : value.term_id,
-                    name: value.name
-                };
-            } );
-        },
-
-        lableOptions: function() {
-            return _.map( a2zpm.project_label, function( value, key ) {
-                return {
-                    id : key,
-                    name: value.label
-                };
-            } );
-        }
 
     },
+
+    watch: {
+        '$route': 'fetchProject'
+    },
+
 
     methods: {
 
@@ -49,23 +25,47 @@ var ProjectAdd = {
             Event.$emit( 'a2zpm-project-isSlide', false );
         },
 
-        createProject: function() {
-            var self = this,
-                data = {
-                    action: 'a2zpm-create-project',
-                    formdata: this.project,
-                    nonce: a2zpm.nonce.project_create
-                };
+        updateTeam: function() {
+            var self = this;
+            var data = {
+                id: self.$route.params.id,
+                users: self.project.users,
+                action: 'a2zpm-update-project-team',
+                nonce: a2zpm.nonce.update_team
+            };
 
             a2zpmBlock( 'a2zpm-project-sidebar-section', '#fff' );
 
-            this.postRequest( data, function(resp){
+            this.postRequest( data,
+            function(resp) {
                 a2zpmUnblock( 'a2zpm-project-sidebar-section' );
-                self.clearDataObject( self.project, 'project' );
                 Event.$emit( 'a2zpm-fetch-all-projects');
-            }, function(resp) {
+            },
+            function(resp) {
                 a2zpmUnblock( 'a2zpm-project-sidebar-section' );
-            } );
+                alert( 'Something wrong' );
+            });
+        },
+
+        fetchProject: function() {
+            var self = this;
+            var data = {
+                id: this.$route.params.id,
+                action: 'a2zpm-get-all-projects',
+                nonce: a2zpm.nonce.get_projects
+            };
+
+            a2zpmBlock( 'a2zpm-project-sidebar-section', '#fff' );
+
+            this.postRequest( data,
+            function(resp) {
+                self.project = resp.data;
+                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+            },
+            function(resp) {
+                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+                alert( 'Something wrong' );
+            });
         },
 
         asyncFind (query) {
@@ -91,7 +91,7 @@ var ProjectAdd = {
                 self.isLoading = false;
                 self.users = _.map( resp.data, function( el ) { return el } );
             }, function(resp) {
-                console.log( 'Something wrong try later' );
+                console.log( 'Something wrong try later' ); // @TODO: neen to localize later
             } );
         },
 
@@ -118,5 +118,7 @@ var ProjectAdd = {
 
     mounted: function() {
         this.resizeSidebar();
+        this.fetchProject();
     }
-}
+
+};

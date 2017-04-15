@@ -102,7 +102,7 @@ var globalMixins = {
         resizeSidebar: function() {
             $(window).resize(function() {
                 $('.sidebar-section').height( ( $(window).height() )+'px' );
-                $('.sidebar-section .content').height( ( $(window).height() - ( 31 + 33 + 50 + 28 ) )+'px' );
+                $('.sidebar-section .content').height( ( $(window).height() - ( 31 + 40 + 50 + 30 ) )+'px' );
             });
 
             $(window).trigger('resize');
@@ -187,11 +187,17 @@ var ProjectAdd = {
                 return;
             }
 
-            var self = this;
+            var self = this,
+                userArray = _.pluck( self.project.users, 'ID' );
+
+            if ( ! _.contains( userArray, a2zpm.current_user.ID.toString() ) ) {
+                 userArray.push( a2zpm.current_user.ID.toString() );
+            }
+
             self.isLoading = true;
             var data = {
                 action : 'a2zpm-search-user',
-                exclude: a2zpm.current_user.ID,
+                exclude: userArray,
                 query : query
             };
 
@@ -201,6 +207,26 @@ var ProjectAdd = {
             }, function(resp) {
                 console.log( 'Something wrong try later' );
             } );
+        },
+
+        setProjectUser: function( selectedOption, id ) {
+            if ( ! _.contains( _.pluck( this.project.users, 'ID' ), selectedOption.ID ) ) {
+                this.project.users.push( selectedOption );
+            }
+        },
+
+        removeSelectedUser: function( value, id ) {
+            var self = this;
+
+            self.users = self.users.filter( function( value ) {
+                if ( ! _.contains( _.pluck( self.project.users, 'ID' ), value.ID ) ) {
+                    return value;
+                }
+            });
+        },
+
+        removeProjectUser: function( index ) {
+            this.project.users.splice( index, 1 );
         }
     },
 
@@ -392,7 +418,7 @@ var ProjectAllListing = {
         var self = this;
 
         // Set slide constant true/false depending on routing( if sidebar is present or not )
-        if ( 'a2zpm_project_add' == this.$route.name || 'a2zpm_project_edit' == this.$route.name  ) {
+        if ( 'a2zpm_project_add' == this.$route.name || 'a2zpm_project_edit' == this.$route.name || 'a2zpm_project_manage_team' == this.$route.name ) {
             self.isSlide = true;
         }
 
@@ -426,6 +452,10 @@ var ProjectEdit = {
     },
 
     computed: {
+
+        projectTitleHeading: function() {
+            return this.project.title || 'Edit this project'; // @TODO: Need to localize it
+        },
 
         categoryOptions: function() {
             return _.map( a2zpm.project_categories, function( value ) {
@@ -531,6 +561,130 @@ var ProjectTasklists = {
 
     }
 }
+var ProjectManageTeam = {
+    template: '#tmpl-a2zpm-project-manage-team',
+
+    mixins: [ globalMixins ],
+
+    data: function() {
+        return {
+            project: {},
+            users: [],
+            selectedUsers: {},
+            isLoading: false
+        }
+
+    },
+
+    watch: {
+        '$route': 'fetchProject'
+    },
+
+
+    methods: {
+
+        cancelSidebar: function() {
+            router.replace( { name: 'a2zpm_home' } );
+            Event.$emit( 'a2zpm-project-isSlide', false );
+        },
+
+        updateTeam: function() {
+            var self = this;
+            var data = {
+                id: self.$route.params.id,
+                users: self.project.users,
+                action: 'a2zpm-update-project-team',
+                nonce: a2zpm.nonce.update_team
+            };
+
+            a2zpmBlock( 'a2zpm-project-sidebar-section', '#fff' );
+
+            this.postRequest( data,
+            function(resp) {
+                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+                Event.$emit( 'a2zpm-fetch-all-projects');
+            },
+            function(resp) {
+                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+                alert( 'Something wrong' );
+            });
+        },
+
+        fetchProject: function() {
+            var self = this;
+            var data = {
+                id: this.$route.params.id,
+                action: 'a2zpm-get-all-projects',
+                nonce: a2zpm.nonce.get_projects
+            };
+
+            a2zpmBlock( 'a2zpm-project-sidebar-section', '#fff' );
+
+            this.postRequest( data,
+            function(resp) {
+                self.project = resp.data;
+                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+            },
+            function(resp) {
+                a2zpmUnblock( 'a2zpm-project-sidebar-section' );
+                alert( 'Something wrong' );
+            });
+        },
+
+        asyncFind (query) {
+            if ( query.length < 2 ) {
+                return;
+            }
+
+            var self = this,
+                userArray = _.pluck( self.project.users, 'ID' );
+
+            if ( ! _.contains( userArray, a2zpm.current_user.ID.toString() ) ) {
+                 userArray.push( a2zpm.current_user.ID.toString() );
+            }
+
+            self.isLoading = true;
+            var data = {
+                action : 'a2zpm-search-user',
+                exclude: userArray,
+                query : query
+            };
+
+            self.postRequest( data, function(resp) {
+                self.isLoading = false;
+                self.users = _.map( resp.data, function( el ) { return el } );
+            }, function(resp) {
+                console.log( 'Something wrong try later' ); // @TODO: neen to localize later
+            } );
+        },
+
+        setProjectUser: function( selectedOption, id ) {
+            if ( ! _.contains( _.pluck( this.project.users, 'ID' ), selectedOption.ID ) ) {
+                this.project.users.push( selectedOption );
+            }
+        },
+
+        removeSelectedUser: function( value, id ) {
+            var self = this;
+
+            self.users = self.users.filter( function( value ) {
+                if ( ! _.contains( _.pluck( self.project.users, 'ID' ), value.ID ) ) {
+                    return value;
+                }
+            });
+        },
+
+        removeProjectUser: function( index ) {
+            this.project.users.splice( index, 1 );
+        }
+    },
+
+    mounted: function() {
+        this.resizeSidebar();
+        this.fetchProject();
+    }
+
+};
 var projectSidebar = {
 
     template: '#tmpl-a2zpm-project-sidebar',
@@ -690,13 +844,15 @@ var routes = [
         children: [
             { path: 'add', component: ProjectAdd, name: 'a2zpm_project_add' },
             { path: 'edit/:id', component: ProjectEdit, name: 'a2zpm_project_edit' },
+            { path: 'team/:id', component: ProjectManageTeam, name: 'a2zpm_project_manage_team' },
         ]
     },
 
 
     {
-        path: '/project/:id', name: 'singleproject', component: SigleProject,
+        path: '/project/:id', component: SigleProject,
         children : [
+            { path: '/', name: 'project_tasklists', component: ProjectTasklists },
             {
                 path: 'tasklists',
                 component: ProjectTasklists,
@@ -725,13 +881,12 @@ var routes = [
                         component: SingleTask
                     },
 
-                ]
+                ],
             },
             {
                 path: 'files',
                 component: ProjectFiles
             }
-
         ]
     },
     { path: '/', component: ProjectAllListing, name: 'a2zpm_home' }

@@ -8,13 +8,15 @@ var routes = [
         children: [
             { path: 'add', component: ProjectAdd, name: 'a2zpm_project_add' },
             { path: 'edit/:id', component: ProjectEdit, name: 'a2zpm_project_edit' },
+            { path: 'team/:id', component: ProjectManageTeam, name: 'a2zpm_project_manage_team' },
         ]
     },
 
 
     {
-        path: '/project/:id', name: 'singleproject', component: SigleProject,
+        path: '/project/:id', component: SigleProject,
         children : [
+            { path: '/', name: 'project_tasklists', component: ProjectTasklists },
             {
                 path: 'tasklists',
                 component: ProjectTasklists,
@@ -43,13 +45,12 @@ var routes = [
                         component: SingleTask
                     },
 
-                ]
+                ],
             },
             {
                 path: 'files',
                 component: ProjectFiles
             }
-
         ]
     },
     { path: '/', component: ProjectAllListing, name: 'a2zpm_home' }

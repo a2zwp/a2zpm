@@ -33,7 +33,7 @@ var globalMixins = {
         resizeSidebar: function() {
             $(window).resize(function() {
                 $('.sidebar-section').height( ( $(window).height() )+'px' );
-                $('.sidebar-section .content').height( ( $(window).height() - ( 31 + 33 + 50 + 28 ) )+'px' );
+                $('.sidebar-section .content').height( ( $(window).height() - ( 31 + 40 + 50 + 30 ) )+'px' );
             });
 
             $(window).trigger('resize');

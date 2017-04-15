@@ -8,6 +8,25 @@ namespace WebApps\a2zpm;
 */
 class Projects {
 
+    /**
+     * The product (post) ID.
+     *
+     * @var int
+     */
+    public $id = 0;
+
+    /**
+     * $post Stores post data.
+     *
+     * @var $post WP_Post
+     */
+    public $post = null;
+
+    /**
+     * Set common private data
+     *
+     * @var array
+     */
     private $data = [
         'id',
         'title',
@@ -24,7 +43,27 @@ class Projects {
     * @since 1.0.0
     */
     public function __construct( $project = null ) {
+        if ( is_numeric( $project ) ) {
+            $this->id   = absint( $project );
+            $this->post = get_post( $this->id );
+        } elseif ( $project instanceof \WebApps\a2zpm\Projects ) {
+            $this->id   = absint( $project->id );
+            $this->post = $project->post;
+        } elseif ( isset( $project->ID ) ) {
+            $this->id   = absint( $project->ID );
+            $this->post = $project;
+        }
+    }
 
+    /**
+    * Set post data
+    *
+    * @since 0.0.1
+    *
+    * @return void
+    **/
+    public function get_post_data() {
+        return get_post( $this->id );
     }
 
     /**
@@ -102,24 +141,29 @@ class Projects {
                 }
                 $projects[$key]['label'] = $map_label;
 
-                $users = explode( ',', $project->user_id );
+                $projects[$key]['users'] = [];
 
-                $projects[$key]['users'] = array_map( function( $user ) {
-                    $user_data  = \get_user_by( 'id', $user );
-                    $first_name = !empty( $user_data->first_name ) ? $user_data->first_name : $user_data->display_name;
-                    $last_name  = !empty( $user_data->last_name ) ? $user_data->last_name : '';
-                    $full_name  = ( $first_name || $last_name ) ? $first_name . ' ' . $last_name : $user_data->display_name;
-                    $avatar_url = get_avatar_url( $user_data->ID );
+                if ( ! empty( $project->user_id ) ) {
+                    $users = explode( ',', $project->user_id );
 
-                    return [
-                        'id'         => $user_data->ID,
-                        'first_name' => $first_name,
-                        'last_name'  => $last_name,
-                        'full_name'  => trim( $full_name ),
-                        'avatar_url' => $avatar_url
-                    ];
+                    $projects[$key]['users'] = array_map( function( $user ) {
+                        $user_data  = \get_user_by( 'id', $user );
+                        $first_name = !empty( $user_data->first_name ) ? $user_data->first_name : $user_data->display_name;
+                        $last_name  = !empty( $user_data->last_name ) ? $user_data->last_name : '';
+                        $full_name  = ( $first_name || $last_name ) ? $first_name . ' ' . $last_name : $user_data->display_name;
+                        $avatar_url = get_avatar_url( $user_data->ID );
 
-                }, $users );
+                        return [
+                            'id'         => $user_data->ID,
+                            'first_name' => $first_name,
+                            'last_name'  => $last_name,
+                            'full_name'  => trim( $full_name ),
+                            'avatar_url' => $avatar_url
+                        ];
+
+                    }, $users );
+                }
+
             }
         }
 
@@ -209,24 +253,34 @@ class Projects {
                     }
                     $projects[$key]['label'] = $map_label;
 
-                    $users = explode( ',', $project->user_id );
+                    $users = [];
+                    $projects[$key]['users'] = [];
 
-                    $projects[$key]['users'] = array_map( function( $user ) {
-                        $user_data  = \get_user_by( 'id', $user );
-                        $first_name = !empty( $user_data->first_name ) ? $user_data->first_name : $user_data->display_name;
-                        $last_name  = !empty( $user_data->last_name ) ? $user_data->last_name : '';
-                        $full_name  = ( $first_name || $last_name ) ? $first_name . ' ' . $last_name : $user_data->display_name;
-                        $avatar_url = get_avatar_url( $user_data->ID );
+                    if ( ! empty( $project->user_id ) ) {
+                        $users = explode( ',', $project->user_id );
+                    }
 
-                        return [
-                            'id'         => $user_data->ID,
-                            'first_name' => $first_name,
-                            'last_name'  => $last_name,
-                            'full_name'  => trim( $full_name ),
-                            'avatar_url' => $avatar_url
-                        ];
+                    if ( !empty( $users ) ) {
+                        $projects[$key]['users'] = array_map( function( $user ) {
+                            $user_data  = \get_user_by( 'id', $user );
+                            $first_name = !empty( $user_data->first_name ) ? $user_data->first_name : $user_data->display_name;
+                            $last_name  = !empty( $user_data->last_name ) ? $user_data->last_name : '';
+                            $full_name  = ( $first_name || $last_name ) ? $first_name . ' ' . $last_name : $user_data->display_name;
+                            $avatar_url = get_avatar_url( $user_data->ID );
 
-                    }, $users );
+                            return [
+                                'ID'           => $user_data->ID,
+                                'first_name'   => $first_name,
+                                'last_name'    => $last_name,
+                                'full_name'    => trim( $full_name ),
+                                'user_email'   => $user_data->user_email,
+                                'display_name' => $user_data->display_name,
+                                'avatar_url'   => $avatar_url
+                            ];
+
+                        }, $users );
+                    }
+
                 }
             }
 
@@ -270,30 +324,30 @@ class Projects {
         }
 
         if ( empty( $args['ID'] ) ) {
-            $project_id = wp_insert_post( $args );
+            $this->id = wp_insert_post( $args );
         } else {
-            $project_id = wp_update_post( $args );
+            $this->id = wp_update_post( $args );
         }
 
-        if ( is_wp_error( $project_id ) ) {
-            return $project_id;
+        if ( is_wp_error( $this->id ) ) {
+            return $this->id;
         }
 
         if ( ! empty( $args['category']['id'] ) ) {
-            wp_set_post_terms( $project_id, (array)$args['category']['id'], 'a2zpm_project_category', false );
+            wp_set_post_terms( $this->id, (array)$args['category']['id'], 'a2zpm_project_category', false );
         }
 
         if ( ! empty( $args['label']['id'] ) ) {
-            update_post_meta( $project_id, '_a2zpm_project_label', sanitize_text_field( $args['label']['id'] ) );
+            update_post_meta( $this->id, '_a2zpm_project_label', sanitize_text_field( $args['label']['id'] ) );
         }
 
         if ( empty( $args['ID'] ) ) {
-            $this->project_assign_user( $project_id, $args );
+            $this->project_assign_user( $args['users'] );
         }
 
-        do_action( 'a2zpm_create_projects', $project_id, $args );
+        do_action( 'a2zpm_create_projects', $this->id, $args );
 
-        return $project_id;
+        return $this->id;
     }
 
     /**
@@ -305,12 +359,12 @@ class Projects {
     *
     * @return void
     **/
-    public function archive_projects( $id ) {
-        if ( empty( $id ) ) {
+    public function archive_projects() {
+        if ( empty( $this->id ) ) {
             return new \WP_Error( 'no-project-id', __( 'No project found for archiving', A2ZPM_TEXTDOMAIN ) );
         }
 
-        $is_archive = wp_trash_post( $id );
+        $is_archive = wp_trash_post( $this->id );
 
         if ( ! $is_archive ) {
             return new \WP_Error( 'no-project-id', __( 'Project are not successfully archived', A2ZPM_TEXTDOMAIN ) );
@@ -328,15 +382,15 @@ class Projects {
     *
     * @return void
     **/
-    public function delete_projects( $id ) {
-        if ( empty( $id ) ) {
+    public function delete_projects() {
+        if ( empty( $this->id ) ) {
             return new \WP_Error( 'no-project-id', __( 'No project found for deleting', A2ZPM_TEXTDOMAIN ) );
         }
 
-        $is_deleted = wp_delete_post( $id, true );
+        $is_deleted = wp_delete_post( $this->id, true );
 
         if ( $is_deleted ) {
-            $this->delete_assign_user( $id );
+            $this->delete_assign_user( $this->id );
         }
 
         if ( ! $is_deleted ) {
@@ -353,32 +407,45 @@ class Projects {
     *
     * @return void
     **/
-    public function project_assign_user( $project_id, $args ) {
+    public function project_assign_user( $users ) {
         global $wpdb;
 
-        if ( ! $project_id ) {
+        if ( ! $this->id ) {
             return;
         }
 
-        $values  = [];
-        $users   = $args['users'];
+        $values       = [];
+        $assign_users = [];
+        $table_name   = $wpdb->prefix . 'a2zpm_users';
 
-        if ( ! in_array( $args['post_author'], $users ) ) {
-            $users[] = $args['post_author'];
+        if ( ! empty( $users ) ) {
+            $assign_users = wp_list_pluck( $users, 'ID' );
+            $assign_users = array_map( 'intval', $assign_users );
         }
 
-        if ( empty( $users ) ) {
+        $project_author = get_post_field( 'post_author', $this->id );
+
+        // If already post author not inside this array then kick in ass this post author and insert to this array
+        if ( ! in_array( $project_author, $assign_users ) ) {
+            $assign_users[] = intval( $project_author );
+        }
+
+        if ( empty( $assign_users ) ) {
             return;
         }
 
-        $query = "INSERT INTO {$wpdb->prefix}a2zpm_users ( project_id, user_id ) VALUES ";
+        // Delete all user row associated with project id
+        $wpdb->delete( $table_name, array( 'project_id' => $this->id ), array( '%d' ) );
 
-        foreach( $users as $key => $user ) {
-             array_push( $values, $project_id, $user );
+        // Now time to insert all updated assignable user
+        $query = "INSERT INTO $table_name ( project_id, user_id ) VALUES ";
+
+        foreach( $assign_users as $key => $user ) {
+             array_push( $values, $this->id, $user );
              $place_holders[] = "('%d', '%d')";
         }
 
-        $query .= implode(', ', $place_holders);
+        $query .= implode( ', ', $place_holders );
         $wpdb->query( $wpdb->prepare( "$query ", $values ) );
 
         return true;
@@ -391,15 +458,15 @@ class Projects {
     *
     * @return void
     **/
-    public function delete_assign_user( $project_id ) {
+    public function delete_assign_user() {
         global $wpdb;
 
-        if ( ! $project_id ) {
+        if ( ! $this->id ) {
             return;
         }
 
         $table = $wpdb->prefix . 'a2zpm_users';
-        $result = $wpdb->delete( $table, array( 'project_id' => $project_id ) );
+        $result = $wpdb->delete( $table, array( 'project_id' => $this->id ) );
 
         if ( ! $result ) {
             return new \WP_Error( 'no-project-id', __( 'Something wrong to delete assignable users', A2ZPM_TEXTDOMAIN ) );

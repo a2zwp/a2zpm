@@ -18,6 +18,10 @@ var ProjectEdit = {
 
     computed: {
 
+        projectTitleHeading: function() {
+            return this.project.title || 'Edit this project'; // @TODO: Need to localize it
+        },
+
         categoryOptions: function() {
             return _.map( a2zpm.project_categories, function( value ) {
                 return {

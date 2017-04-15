@@ -14,15 +14,15 @@
 
                         <div class="settings">
                             <span class="manage-team">
-                                <a href="#" v-tooltip title="<?php _e( 'Invite user and Manage team', A2ZPM_TEXTDOMAIN ); ?>" @click.prevent="manageTeam( project )"><i class="fa fa-user"></i></a>
+                                <router-link v-tooltip :to="{ name: 'a2zpm_project_manage_team', params:{ id: project.ID } }" @click.native="isSlide=true" title="<?php _e( 'Manage team', A2ZPM_TEXTDOMAIN ); ?>" ><i class="fa fa-user"></i></router-link>
+                                <!-- <a href="#" v-tooltip title="<?php _e( 'Invite user and Manage team', A2ZPM_TEXTDOMAIN ); ?>" @click.prevent="manageTeam( project )"><i class="fa fa-user"></i></a> -->
                             </span>
                             <span class="dropdown">
-                                <a data-target="#" v-tooltip class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<?php _e( 'Settings', A2ZPM_TEXTDOMAIN ); ?>">
+                                <a data-target="#" v-tooltip class="setting-icon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<?php _e( 'Settings', A2ZPM_TEXTDOMAIN ); ?>">
                                     <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                                 </a>
                                 <ul class="dropdown-menu a2zpm-right" aria-labelledby="dropdownMenu1">
                                     <router-link tag="li" :to="{ name: 'a2zpm_project_edit', params:{ id: project.ID } }" @click.native="isSlide=true" ><a href="#"><i class="fa fa-pencil" aria-hidden="true"></i> <?php _e( 'Edit', A2ZPM_TEXTDOMAIN ); ?></a></router-link>
-                                    <!-- <li><a href="#" @click.prevent="editProject( project )"><i class="fa fa-pencil" aria-hidden="true"></i> <?php _e( 'Edit', A2ZPM_TEXTDOMAIN ); ?></a></li> -->
                                     <li><a href="#"><i class="fa fa-users" aria-hidden="true"></i> <?php _e( 'Manage Team', A2ZPM_TEXTDOMAIN ); ?></a></li>
                                     <li><a href="#"><i class="fa fa-link" aria-hidden="true"></i> <?php _e( 'Mark as completed', A2ZPM_TEXTDOMAIN ); ?></a></li>
                                     <li><a href="#" @click.prevent="archiveProject( index, project )"><i class="fa fa-archive" aria-hidden="true"></i> <?php _e( 'Make Archive', A2ZPM_TEXTDOMAIN ); ?></a></li>

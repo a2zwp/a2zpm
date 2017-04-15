@@ -230,6 +230,7 @@ class A2Z_PM {
                                         'get_projects'    => wp_create_nonce( 'a2zpm_get_projects' ),
                                         'project_archive' => wp_create_nonce( 'a2zpm_archive_projects' ),
                                         'project_delete'  => wp_create_nonce( 'a2zpm_delete_projects' ),
+                                        'update_team'     => wp_create_nonce( 'a2zpm_update_team' ),
                                     ],
             'project_categories' => get_terms( [
                                         'taxonomy'   => 'a2zpm_project_category',
